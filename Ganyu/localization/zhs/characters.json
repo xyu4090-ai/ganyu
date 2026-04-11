@@ -1,32 +1,17 @@
 {
-  // 混沌香气事件中的内心独白
   "GANYU-GANYU_CHARACTER.aromaPrinciple": "[sine][blue]……等待……[/blue][/sine]",
-  // 多人模式：存活时回合结束对白
-  "GANYU-GANYU_CHARACTER.banter.alive.endTurnPing": "……",
-  // 多人模式：死亡后回合结束对白
-  "GANYU-GANYU_CHARACTER.banter.dead.endTurnPing": "……",
-  // 自定义模式文本
+  "GANYU-GANYU_CHARACTER.banter.alive.endTurnPing": "开子牛马打牌打快点",
+  "GANYU-GANYU_CHARACTER.banter.dead.endTurnPing": "这都能让我死，开子马哥真菜",
   "GANYU-GANYU_CHARACTER.cardsModifierDescription": "甘雨的卡牌现在会出现在奖励和商店中。",
-  // 卡池名字
   "GANYU-GANYU_CHARACTER.cardsModifierTitle": "甘雨卡牌",
-  // 角色选择界面描述
   "GANYU-GANYU_CHARACTER.description": "一个在璃月工作上千年的存在。\n时间对[gold]甘雨[/gold]而言，不过是另一种形式的永恒。",
-  // 死亡时事件对话
   "GANYU-GANYU_CHARACTER.eventDeathPrevention": "我还得继续等下去……",
-  // 沉没宝库事件中对金币的独白
   "GANYU-GANYU_CHARACTER.goldMonologue": "[sine]这些金币……也许能派上用场……[/sine]",
-  // 物主形容词，用于动态文本
-  "GANYU-GANYU_CHARACTER.possessiveAdjective": "他的",
-  // 宾语代词
-  "GANYU-GANYU_CHARACTER.pronounObject": "他",
-  // 所有格代词
-  "GANYU-GANYU_CHARACTER.pronounPossessive": "他的",
-  // 主语代词
-  "GANYU-GANYU_CHARACTER.pronounSubject": "他",
-  // 角色名（标题用）
+  "GANYU-GANYU_CHARACTER.possessiveAdjective": "她的",
+  "GANYU-GANYU_CHARACTER.pronounObject": "她",
+  "GANYU-GANYU_CHARACTER.pronounPossessive": "她的",
+  "GANYU-GANYU_CHARACTER.pronounSubject": "她",
   "GANYU-GANYU_CHARACTER.title": "甘雨",
-  // 角色名（作宾语用）
   "GANYU-GANYU_CHARACTER.titleObject": "甘雨",
-  // 解锁条件文案，{Prerequisite} 会被替换
   "GANYU-GANYU_CHARACTER.unlockText": "用[pink]{Prerequisite}[/pink]进行一局游戏来解锁这个角色。"
 }
