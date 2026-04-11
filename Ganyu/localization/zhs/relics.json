@@ -1,0 +1,11 @@
+{
+    "GANYU-HEAVENLY_FALL.description": "在每场战斗开始时，给于所有敌人[blue]{IcePower}[/blue]层[gold]冰元素[/gold]。每[blue]{Turns}[/blue]个回合，获得{Energy:energyIcons()},获得[gold]饮露[/gold]状态。",
+    "GANYU-HEAVENLY_FALL.flavor": "在每场战斗开始时，给于所有敌人[blue]{IcePower}[/blue]层[gold]冰元素[/gold]。每[blue]{Turns}[/blue]个回合，获得{Energy:energyIcons()},获得[gold]饮露[/gold]状态。", 
+    "GANYU-HEAVENLY_FALL.title": "降众天华",
+    "GANYU-HEAVENLY_FALL_U_P.description": "在每场战斗开始时，给于所有敌人[blue]{IcePower}[/blue]层[gold]冰元素[/gold]。每[blue]{Turns}[/blue]个回合，获得{Energy:energyIcons()},获得[gold]饮露[/gold]状态。",
+    "GANYU-HEAVENLY_FALL_U_P.flavor": "在每场战斗开始时，给于所有敌人[blue]{IcePower}[/blue]层[gold]冰元素[/gold]。每[blue]{Turns}[/blue]个回合，获得{Energy:energyIcons()},获得[gold]饮露[/gold]状态。", 
+    "GANYU-HEAVENLY_FALL_U_P.title": "降众天华UP",
+    "GANYU-CRYA_THEORY.description": "只有冰元素可以和其他元素反应，其他元素之间共存不发生反应。\n[gold]冰+火[/gold]产生融化反应。\n[gold]冰+水[/gold]产生结冰反应。\n[gold]冰+风[/gold]产生扩散反应。\n[gold]冰+岩[/gold]产生结晶反应。\n[gold]冰+电[/gold]产生超导反应。",
+    "GANYU-CRYA_THEORY.flavor": "元素反应优先级为上述给出的顺序", 
+    "GANYU-CRYA_THEORY.title": "冰元素论"
+}

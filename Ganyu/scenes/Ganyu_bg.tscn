@@ -1,0 +1,50 @@
+[gd_scene load_steps=3 format=3 uid="uid://cejqjeipgqe0n"]
+
+[ext_resource type="Texture2D" uid="uid://cg0este683aw" path="res://Ganyu/images/Gemini_Generated_Image_32aj1t32aj1t32aj (1).png" id="1_6w1hj"]
+[ext_resource type="Texture2D" uid="uid://vikjujnp3oq1" path="res://Ganyu/images/GanyuBg.png" id="2_ugasv"]
+
+[node name="GanyuBg" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_6w1hj")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="SnowParticles" type="CPUParticles2D" parent="."]
+position = Vector2(960, -50)
+amount = 250
+lifetime = 10.0
+preprocess = 10.0
+emission_shape = 3
+emission_rect_extents = Vector2(1000, 1)
+direction = Vector2(0, 1)
+spread = 20.0
+gravity = Vector2(-20, 30)
+initial_velocity_min = 80.0
+initial_velocity_max = 150.0
+scale_amount_min = 2.0
+scale_amount_max = 5.0
+color = Color(1, 1, 1, 0.7)
+
+[node name="GanyuSprite" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_ugasv")
+expand_mode = 1
+stretch_mode = 5

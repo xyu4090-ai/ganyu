@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://bi5m5cfphco56"]
+
+[ext_resource type="Texture2D" uid="uid://cwg3bvvvbfnq5" path="res://Ganyu/images/GanyuModel.png" id="1_sb2mn"]
+
+[node name="GanyuCharacter" type="Node2D"]
+
+[node name="Visuals" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(38, -173.43953)
+scale = Vector2(0.18414201, 0.1495805)
+texture = ExtResource("1_sb2mn")
+
+[node name="Bounds" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = -127.0
+offset_top = -356.0
+offset_right = 165.0
+
+[node name="IntentPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -366)
+
+[node name="CenterPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(1, -241)
