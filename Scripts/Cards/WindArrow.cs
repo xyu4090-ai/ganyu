@@ -1,3 +1,4 @@
+using BaseLib.Extensions;
 using BaseLib.Utils;
 using Ganyu.Scripts.Powers;
 using Ganyu.Scripts.Utils;
@@ -15,7 +16,7 @@ public class WindArrow : GanyuCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Uncommon;
+    private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.AnyEnemy;
 
     public WindArrow() : base(energyCost, type, rarity, targetType, true) { }
@@ -45,5 +46,6 @@ public class WindArrow : GanyuCardModel
     protected override void OnUpgrade()
     {
         base.DynamicVars.Damage.UpgradeValueBy(3m);
+        base.DynamicVars.Power<WindPower>().UpgradeValueBy(1m);
     }
 }

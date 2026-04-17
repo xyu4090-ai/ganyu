@@ -16,17 +16,4 @@ public class IcePower : CustomPowerModel
     // 自定义图标路径，自己指定，或者创建一个基类来统一指定图标路径
     public override string? CustomPackedIconPath => "res://Ganyu/images/powers/ice_power.png";
     public override string? CustomBigIconPath => "res://Ganyu/images/powers/ice_power.png";
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
-    {
-        if (side == CombatSide.Enemy)
-        {
-            if (GanyuElementUtils.HasRetainElement)
-            {
-                return;
-            }
-
-            // 如果没有精通，则正常减少 1 层
-            await PowerCmd.TickDownDuration(this);
-        }
-    }
 }

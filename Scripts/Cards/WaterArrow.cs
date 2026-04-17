@@ -1,3 +1,4 @@
+using BaseLib.Extensions;
 using BaseLib.Utils;
 using Ganyu.Scripts.Powers;
 using Ganyu.Scripts.Utils;
@@ -25,7 +26,7 @@ public class WaterArrow : GanyuCardModel
         HoverTipFactory.FromPower<WetPower>()
     ];
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new DamageVar(6m, ValueProp.Move), // 基础伤害 6 [cite: 482]
+        new DamageVar(9m, ValueProp.Move), // 基础伤害 6 [cite: 482]
         new PowerVar<WetPower>(1m)        // 水元素标记 1 层
     ];
 
@@ -44,6 +45,7 @@ public class WaterArrow : GanyuCardModel
     }
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Damage.UpgradeValueBy(3m); // 升级后造成 9 点伤害 
+        base.DynamicVars.Damage.UpgradeValueBy(3m); // 升级后造成 9 点伤害
+        base.DynamicVars.Power<WetPower>().UpgradeValueBy(1m); 
     }
 }

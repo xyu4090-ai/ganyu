@@ -4,8 +4,6 @@ using Ganyu.Scripts.Relics;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Cards;
-using MegaCrit.Sts2.Core.Models.Relics;
 namespace Ganyu.Scripts;
 
 public class GanyuCharacter : PlaceholderCharacterModel
@@ -24,11 +22,11 @@ public class GanyuCharacter : PlaceholderCharacterModel
     // 人物模型tscn路径。要自定义见下。
     public override string CustomVisualPath => "res://Ganyu/scenes/Ganyu_character.tscn";
     // 卡牌拖尾场景。
-    // public override string CustomTrailPath => "res://scenes/vfx/card_trail_ironclad.tscn";
+    public override string CustomTrailPath => "res://Ganyu/scenes/vfx/card_trail_ganyu.tscn";
     // 人物头像路径。
     public override string CustomIconTexturePath => "res://Ganyu/images/icon.svg";
     // 人物头像2号。
-    // public override string CustomIconPath => "res://scenes/ui/character_icons/ironclad_icon.tscn";
+    public override string CustomIconPath => "res://Ganyu/scenes/Ganyu_icon.tscn";
     // 能量表盘tscn路径。要自定义见下。
     public override string CustomEnergyCounterPath => "res://Ganyu/scenes/Ganyu_energy_counter.tscn";
     // 篝火休息场景。
@@ -36,13 +34,13 @@ public class GanyuCharacter : PlaceholderCharacterModel
     // 商店人物场景。
     // public override string CustomMerchantAnimPath => "res://scenes/merchant/characters/ironclad_merchant.tscn";
     // 多人模式-手指。
-    // public override string CustomArmPointingTexturePath => null;
+    public override string CustomArmPointingTexturePath => "res://Ganyu/hand/multiplayer_hand_ganyu_point.png";
     // 多人模式剪刀石头布-石头。
-    // public override string CustomArmRockTexturePath => null;
+    public override string CustomArmRockTexturePath => "res://Ganyu/hand/multiplayer_hand_ganyu_rock.png";
     // 多人模式剪刀石头布-布。
-    // public override string CustomArmPaperTexturePath => null;
+    public override string CustomArmPaperTexturePath => "res://Ganyu/hand/multiplayer_hand_ganyu_paper.png";
     // 多人模式剪刀石头布-剪刀。
-    // public override string CustomArmScissorsTexturePath => null;
+    public override string CustomArmScissorsTexturePath => "res://Ganyu/hand/multiplayer_hand_ganyu_scissors.png";
 
     // 人物选择背景。
     public override string CustomCharacterSelectBg => "res://Ganyu/scenes/Ganyu_bg.tscn";

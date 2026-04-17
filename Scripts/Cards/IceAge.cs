@@ -1,21 +1,19 @@
-using BaseLib.Extensions;
+
 using BaseLib.Utils;
 using Ganyu.Scripts.Powers;
 using Ganyu.Scripts.Utils;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models.Cards;
-using MegaCrit.Sts2.Core.ValueProps;
+
 
 namespace Ganyu.Scripts.Cards;
 
 [Pool(typeof(GanyuCardPool))]
 public sealed class IceAge : GanyuCardModel
 {
-    public IceAge() : base(3, CardType.Skill, CardRarity.Rare, TargetType.AllEnemies, true)
+    public IceAge() : base(2, CardType.Skill, CardRarity.Rare, TargetType.AllEnemies, true)
     {
     }
 

@@ -14,11 +14,4 @@ public class ElectroPower : CustomPowerModel
     // 自定义图标路径，自己指定，或者创建一个基类来统一指定图标路径
     public override string? CustomPackedIconPath => "res://Ganyu/images/powers/electro_power.png";
     public override string? CustomBigIconPath => "res://Ganyu/images/powers/electro_power.png";
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
-    {
-        if (side == CombatSide.Enemy)
-        {
-            await PowerCmd.TickDownDuration(this);
-        }
-    }
 }

@@ -5,7 +5,8 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using Ganyu.Scripts.Powers;
 using BaseLib.Utils;
-using Ganyu.Scripts.Utils;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using BaseLib.Extensions;
 
 namespace Ganyu.Scripts.Cards;
 
@@ -16,15 +17,25 @@ public sealed class RetainElement : GanyuCardModel
     {
     }
 
+    // 声明能力变量，初始给予 1 层
+    protected override IEnumerable<DynamicVar> CanonicalVars => [
+        new PowerVar<RetainElementPower>(1m)
+    ];
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // 赋予玩家“元素残留”能力
-        await PowerCmd.Apply<RetainElementPower>(base.Owner.Creature, 1m, base.Owner.Creature, this);
-        GanyuElementUtils.HasRetainElement = true;
+        // 赋予玩家修改后的“冰元素精通”能力
+        await PowerCmd.Apply<RetainElementPower>(
+            base.Owner.Creature, 
+            base.DynamicVars.Power<RetainElementPower>().BaseValue, 
+            base.Owner.Creature, 
+            this
+        );
     }
 
     protected override void OnUpgrade()
     {
+        // 升级效果可以保持“固有”，或者改为增加层数。这里保留固有属性
         AddKeyword(CardKeyword.Innate);
     }
 }

@@ -17,16 +17,4 @@ public class CrystalizePower : CustomPowerModel
     public override PowerStackType StackType => PowerStackType.Counter;
     public override string? CustomPackedIconPath => "res://Ganyu/images/powers/crystalize_power.png";
     public override string? CustomBigIconPath => "res://Ganyu/images/powers/crystalize_power.png";
-
-	public override async Task AfterDamageGiven(PlayerChoiceContext choiceContext, Creature? dealer, DamageResult result, ValueProp props, Creature target, CardModel? cardSource)
-	{
-		if (target == base.Owner && dealer != null && dealer != base.Owner && result.TotalDamage > 0)
-		{
-			Player player = dealer.Player ?? base.Applier?.Player;
-			if (player != null)
-			{
-				await CreatureCmd.GainBlock(player.Creature, base.Amount, ValueProp.Unpowered, null);
-			}
-		}
-	}
 }

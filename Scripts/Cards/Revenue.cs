@@ -13,7 +13,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class Revenue : GanyuCardModel
 {
-    public Revenue() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
+    public Revenue() : base(2, CardType.Power, CardRarity.Rare, TargetType.Self, true)
     {
     }
 

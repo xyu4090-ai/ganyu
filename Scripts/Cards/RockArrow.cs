@@ -1,3 +1,4 @@
+using BaseLib.Extensions;
 using BaseLib.Utils;
 using Ganyu.Scripts.Powers;
 using Ganyu.Scripts.Utils;
@@ -15,17 +16,15 @@ public class RockArrow : GanyuCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Uncommon;
+    private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.AnyEnemy;
 
     public RockArrow() : base(energyCost, type, rarity, targetType, true) { }
-
-
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [
         HoverTipFactory.FromPower<RockPower>()
     ];
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new DamageVar(4m, ValueProp.Move), // 基础伤害 6 [cite: 482]
+        new DamageVar(9m, ValueProp.Move), // 基础伤害 6 [cite: 482]
         new PowerVar<RockPower>(1m)        // 岩元素标记 1 层
     ];
 
@@ -44,6 +43,7 @@ public class RockArrow : GanyuCardModel
     }
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Damage.UpgradeValueBy(2m);
+        base.DynamicVars.Damage.UpgradeValueBy(3m);
+        base.DynamicVars.Power<RockPower>().UpgradeValueBy(1m);
     }
 }

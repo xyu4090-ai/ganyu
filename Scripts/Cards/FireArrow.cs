@@ -1,3 +1,4 @@
+using BaseLib.Extensions;
 using BaseLib.Utils;
 using Ganyu.Scripts.Powers;
 using Ganyu.Scripts.Utils;
@@ -15,7 +16,7 @@ public class FireArrow : GanyuCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Rare;
+    private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.AnyEnemy;
 
     public FireArrow() : base(energyCost, type, rarity, targetType, true) { }
@@ -25,7 +26,7 @@ public class FireArrow : GanyuCardModel
         HoverTipFactory.FromPower<FlamePower>()
     ];
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new DamageVar(10m, ValueProp.Move), // 基础伤害 6 [cite: 482]
+        new DamageVar(9m, ValueProp.Move), // 基础伤害 6 [cite: 482]
         new PowerVar<FlamePower>(1m)        // 火元素标记 1 层
     ];
 
@@ -44,6 +45,7 @@ public class FireArrow : GanyuCardModel
     }
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Damage.UpgradeValueBy(5m); // 升级后造成 9 点伤害 
+        base.DynamicVars.Damage.UpgradeValueBy(3m); // 升级后造成 9 点伤害 
+        base.DynamicVars.Power<FlamePower>().UpgradeValueBy(1m);
     }
 }

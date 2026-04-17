@@ -6,50 +6,76 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.ValueProps;
 
 namespace Ganyu.Scripts.Utils;
 
 public static class GanyuElementUtils
 {
-    // 本场战斗的反应计数，供 ElementalStorm 等卡牌使用
     public static PlayerChoiceContext? CurrentContext;
+    public static int ReactionsThisTurn = 0;
+    public static int TotalReactionsThisCombat = 0;
+    public static int SwirlsThisTurn = 0;// 新增：追踪本回合触发的扩散次数
+    public static bool HasRetainElement = false;
+    private static async Task<decimal> GetReactionMultiplier(Creature source)
+    {
+        decimal multiplier = 1m;
 
-    // 2. 新增一个“执行器”，用来在卡牌 OnPlay 中包裹反应调用
+        // 1. 检查永久能力：元素溢出 (每层增加 100% 基础效果)
+        if (source.GetPower<ElementalOverflowPower>() is { } overflow && overflow.Amount > 0)
+        {
+            multiplier += overflow.Amount;
+        }
+
+        // 2. 检查消耗性Buff：反应预载 (Overload Prep)
+        // 注意：如果两者同时存在，此处逻辑为在溢出基础上再翻倍
+        if (source.GetPower<OverloadPrepPower>() is { } prep && prep.Amount > 0)
+        {
+            await PowerCmd.TickDownDuration(prep);
+            multiplier *= 2m;
+        }
+
+        return multiplier;
+    }
+
     public static async Task ExecuteReaction(PlayerChoiceContext context, Func<Task> action)
     {
         CurrentContext = context;
         try
         {
-            await action(); // 执行原本的反应逻辑
+            await action();
         }
         finally
         {
-            CurrentContext = null; // 执行完清理
+            CurrentContext = null;
         }
     }
-    public static int TotalReactionsThisCombat = 0;
-    // 新增：判断玩家是否有“冰元素精通”
-    public static bool HasRetainElement = false;
 
-    // 每一场战斗开始时调用，重置计数
     public static void ResetReactionCount()
     {
         TotalReactionsThisCombat = 0;
-        HasRetainElement = false; // 重置标记
+        SwirlsThisTurn = 0; // 同时重置
+        HasRetainElement = false;
+    }
+    public static void ResetTurnCount()
+    {
+        SwirlsThisTurn = 0;
+        ReactionsThisTurn = 0; // 新增：重置本回合的反应次数
     }
 
     // --- 核心反应处理：冰元素 (Ice) ---
-    // 只有冰元素可以和其他元素反应
     public static async Task ApplyIceReaction(Creature target, Creature source, IReadOnlyList<Creature>? hittableEnemies = null, decimal amount = 1m)
     {
         if (amount <= 0) return;
         decimal remaining = amount;
+        await ApplyIceCharge(source, remaining);
 
-        // 优先级 1. 扩散标记 (SwirlPower)
-        if (remaining > 0 && target.GetPower<SwirlPower>() is { } sp && sp.Amount > 0)
+        // 优先级 1. 遇风扩散 (不再检查 SwirlPower，直接检查 WindPower)
+        if (remaining > 0 && target.GetPower<WindPower>() is { } winp && winp.Amount > 0)
         {
-            decimal rc = Math.Min(remaining, sp.Amount);
-            await ConsumeChargesWithRetention(target, source, sp, rc);
+            decimal rc = Math.Min(remaining, winp.Amount);
+            await ConsumeChargesWithRetention(target, source, winp, rc);
+            await TriggerSwirl(target, source, rc, hittableEnemies); // 触发计数
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "ICE");
             remaining -= rc;
         }
@@ -72,16 +98,7 @@ public static class GanyuElementUtils
             remaining -= rc;
         }
 
-        // 优先级 4. 扩散 (与 WindPower 反应)
-        if (remaining > 0 && target.GetPower<WindPower>() is { } winp && winp.Amount > 0)
-        {
-            decimal rc = Math.Min(remaining, winp.Amount);
-            await ConsumeChargesWithRetention(target, source, winp, rc);
-            await TriggerSwirl(target, source, rc, hittableEnemies);
-            remaining -= rc;
-        }
-
-        // 优先级 5. 结晶 (与 RockPower 反应)
+        // 优先级 4. 结晶 (与 RockPower 反应)
         if (remaining > 0 && target.GetPower<RockPower>() is { } rp && rp.Amount > 0)
         {
             decimal rc = Math.Min(remaining, rp.Amount);
@@ -90,7 +107,7 @@ public static class GanyuElementUtils
             remaining -= rc;
         }
 
-        // 优先级 6. 超导 (与 ElectroPower 反应)
+        // 优先级 5. 超导 (与 ElectroPower 反应)
         if (remaining > 0 && target.GetPower<ElectroPower>() is { } ep && ep.Amount > 0)
         {
             decimal rc = Math.Min(remaining, ep.Amount);
@@ -99,7 +116,6 @@ public static class GanyuElementUtils
             remaining -= rc;
         }
 
-        // 最终：如果上述反应触发完后仍有剩余，则附着为残留冰元素
         if (remaining > 0)
         {
             await PowerCmd.Apply<IcePower>(target, remaining, source, null);
@@ -111,17 +127,17 @@ public static class GanyuElementUtils
     {
         if (amount <= 0) return;
         decimal remaining = amount;
-
-        // 扩散标记判定
-        if (remaining > 0 && target.GetPower<SwirlPower>() is { } sp && sp.Amount > 0)
+        await ApplyWaterCharge(source, remaining);
+        // 遇风扩散
+        if (remaining > 0 && target.GetPower<WindPower>() is { } winp && winp.Amount > 0)
         {
-            decimal rc = Math.Min(remaining, sp.Amount);
-            await ConsumeChargesWithRetention(target, source, sp, rc);
+            decimal rc = Math.Min(remaining, winp.Amount);
+            await ConsumeChargesWithRetention(target, source, winp, rc);
+            await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "WATER");
             remaining -= rc;
         }
 
-        // 仅与冰元素反应
         if (remaining > 0 && target.GetPower<IcePower>() is { } ip && ip.Amount > 0)
         {
             decimal rc = Math.Min(remaining, ip.Amount);
@@ -130,7 +146,6 @@ public static class GanyuElementUtils
             remaining -= rc;
         }
 
-        // 其它元素共存不反应
         if (remaining > 0)
         {
             await PowerCmd.Apply<WetPower>(target, remaining, source, null);
@@ -142,16 +157,19 @@ public static class GanyuElementUtils
     {
         if (amount <= 0) return;
         decimal remaining = amount;
+        await ApplyFireCharge(source, remaining);
 
-        if (remaining > 0 && target.GetPower<SwirlPower>() is { } sp && sp.Amount > 0)
+
+        // 遇风扩散
+        if (remaining > 0 && target.GetPower<WindPower>() is { } winp && winp.Amount > 0)
         {
-            decimal rc = Math.Min(remaining, sp.Amount);
-            await ConsumeChargesWithRetention(target, source, sp, rc);
+            decimal rc = Math.Min(remaining, winp.Amount);
+            await ConsumeChargesWithRetention(target, source, winp, rc);
+            await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "FIRE");
             remaining -= rc;
         }
 
-        // 仅与冰元素反应
         if (remaining > 0 && target.GetPower<IcePower>() is { } ip && ip.Amount > 0)
         {
             decimal rc = Math.Min(remaining, ip.Amount);
@@ -171,11 +189,14 @@ public static class GanyuElementUtils
     {
         if (amount <= 0) return;
         decimal remaining = amount;
+        await ApplyElectroCharge(source, remaining);
 
-        if (remaining > 0 && target.GetPower<SwirlPower>() is { } sp && sp.Amount > 0)
+        // 遇风扩散
+        if (remaining > 0 && target.GetPower<WindPower>() is { } winp && winp.Amount > 0)
         {
-            decimal rc = Math.Min(remaining, sp.Amount);
-            await ConsumeChargesWithRetention(target, source, sp, rc);
+            decimal rc = Math.Min(remaining, winp.Amount);
+            await ConsumeChargesWithRetention(target, source, winp, rc);
+            await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "ELECTRO");
             remaining -= rc;
         }
@@ -199,20 +220,47 @@ public static class GanyuElementUtils
     {
         if (amount <= 0) return;
         decimal remaining = amount;
+        await ApplyWindCharge(source, remaining);
 
-        if (remaining > 0 && target.GetPower<SwirlPower>() is { } sp && sp.Amount > 0)
-        {
-            decimal rc = Math.Min(remaining, sp.Amount);
-            await ConsumeChargesWithRetention(target, source, sp, rc);
-            await TriggerSwirlElement(target, source, rc, hittableEnemies, "WIND");
-            remaining -= rc;
-        }
-
+        // 风遇到任何元素直接产生该元素的扩散
         if (remaining > 0 && target.GetPower<IcePower>() is { } ip && ip.Amount > 0)
         {
             decimal rc = Math.Min(remaining, ip.Amount);
             await ConsumeChargesWithRetention(target, source, ip, rc);
             await TriggerSwirl(target, source, rc, hittableEnemies);
+            await TriggerSwirlElement(target, source, rc, hittableEnemies, "ICE");
+            remaining -= rc;
+        }
+        else if (remaining > 0 && target.GetPower<WetPower>() is { } wp && wp.Amount > 0)
+        {
+            decimal rc = Math.Min(remaining, wp.Amount);
+            await ConsumeChargesWithRetention(target, source, wp, rc);
+            await TriggerSwirl(target, source, rc, hittableEnemies);
+            await TriggerSwirlElement(target, source, rc, hittableEnemies, "WATER");
+            remaining -= rc;
+        }
+        else if (remaining > 0 && target.GetPower<FlamePower>() is { } fp && fp.Amount > 0)
+        {
+            decimal rc = Math.Min(remaining, fp.Amount);
+            await ConsumeChargesWithRetention(target, source, fp, rc);
+            await TriggerSwirl(target, source, rc, hittableEnemies);
+            await TriggerSwirlElement(target, source, rc, hittableEnemies, "FIRE");
+            remaining -= rc;
+        }
+        else if (remaining > 0 && target.GetPower<ElectroPower>() is { } ep && ep.Amount > 0)
+        {
+            decimal rc = Math.Min(remaining, ep.Amount);
+            await ConsumeChargesWithRetention(target, source, ep, rc);
+            await TriggerSwirl(target, source, rc, hittableEnemies);
+            await TriggerSwirlElement(target, source, rc, hittableEnemies, "ELECTRO");
+            remaining -= rc;
+        }
+        else if (remaining > 0 && target.GetPower<RockPower>() is { } rp && rp.Amount > 0)
+        {
+            decimal rc = Math.Min(remaining, rp.Amount);
+            await ConsumeChargesWithRetention(target, source, rp, rc);
+            await TriggerSwirl(target, source, rc, hittableEnemies);
+            await TriggerSwirlElement(target, source, rc, hittableEnemies, "ROCK");
             remaining -= rc;
         }
 
@@ -227,11 +275,14 @@ public static class GanyuElementUtils
     {
         if (amount <= 0) return;
         decimal remaining = amount;
+        await ApplyRockCharge(source, remaining);
 
-        if (remaining > 0 && target.GetPower<SwirlPower>() is { } sp && sp.Amount > 0)
+        // 遇风扩散
+        if (remaining > 0 && target.GetPower<WindPower>() is { } winp && winp.Amount > 0)
         {
-            decimal rc = Math.Min(remaining, sp.Amount);
-            await ConsumeChargesWithRetention(target, source, sp, rc);
+            decimal rc = Math.Min(remaining, winp.Amount);
+            await ConsumeChargesWithRetention(target, source, winp, rc);
+            await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "ROCK");
             remaining -= rc;
         }
@@ -257,8 +308,7 @@ public static class GanyuElementUtils
 
         foreach (Creature enemy in hittableEnemies)
         {
-            // 为防止自身死循环，扩散不反馈给原目标
-            if (enemy.IsAlive)
+            if (enemy.IsAlive) // 不反馈给触发源目标
             {
                 switch (elementType)
                 {
@@ -277,44 +327,76 @@ public static class GanyuElementUtils
 
     private static async Task TriggerFrozen(Creature target, Creature source, decimal count)
     {
-        await PowerCmd.Apply<FreezingDebuffPower>(target, count, source, null);
-        await NotifyReaction(source, count);
+        decimal multiplier = await GetReactionMultiplier(source);
+        await PowerCmd.Apply<FreezingDebuffPower>(target, count * multiplier, source, null);
+        await NotifyReaction(source, count * multiplier);
     }
 
     private static async Task TriggerMelt(Creature target, Creature source, decimal count)
     {
-        await PowerCmd.Apply<MeltPower>(target, count, source, null);
-        await NotifyReaction(source, count);
+        // 获取当前角色的反应倍率（例如是否有“元素溢出”能力）
+        decimal multiplier = await GetReactionMultiplier(source);
+
+        // 修改处：不再施加 MeltPower，改为直接造成伤害
+        // 伤害计算逻辑：基础 8 点 * 反应层数 * 反应倍率
+        if (CurrentContext != null)
+        {
+            await CreatureCmd.Damage(
+                CurrentContext,
+                target,
+                8m * count * multiplier,
+                ValueProp.Unpowered, // 使用 Unpowered 属性，表示该伤害不受力量/虚弱等 Buff 影响
+                source,
+                null
+            );
+        }
+
+        // 依然触发反应通知，以确保“不竭岁收”或“政务精简”等能力正常触发
+        await NotifyReaction(source, count * multiplier);
     }
 
     private static async Task TriggerCrystallize(Creature target, Creature source, decimal count)
-    {   
-        await PowerCmd.Apply<CrystalizePower>(target, count, source, null);
-        await NotifyReaction(source, count/2);
+    {
+        decimal multiplier = await GetReactionMultiplier(source);
+
+        // 【新增】玉璋护盾逻辑：如果是结晶反应且拥有该BUFF，效果翻倍并消耗一层
+        if (source.GetPower<JadeShieldPower>() is { } jade && jade.Amount > 0)
+        {
+            multiplier *= 2m;
+            await PowerCmd.TickDownDuration(jade);
+        }
+
+        // 基础结晶逻辑：每层消耗产生 2 点护盾 (按 2m * count * multiplier 计算)
+        await CreatureCmd.GainBlock(source, 2m * count * multiplier, ValueProp.Unpowered, null);
+
+        await NotifyReaction(source, count * multiplier / 2);
     }
 
     private static async Task TriggerSwirl(Creature target, Creature source, decimal count, IReadOnlyList<Creature>? hittableEnemies)
     {
-        await PowerCmd.Apply<SwirlPower>(target, count, source, null);
-        await NotifyReaction(source, count);
+        decimal multiplier = await GetReactionMultiplier(source);
+        SwirlsThisTurn += (int)count; // 记录扩散次数
+        await NotifyReaction(source, count * multiplier);
     }
 
     private static async Task TriggerConduct(Creature target, Creature source, decimal count, IReadOnlyList<Creature>? hittableEnemies)
     {
+        decimal multiplier = await GetReactionMultiplier(source);
         if (hittableEnemies == null) return;
         foreach (Creature enemy in hittableEnemies)
         {
             if (enemy.IsAlive)
             {
-                await PowerCmd.Apply<ConductPower>(enemy, count, source, null);
+                await PowerCmd.Apply<ConductPower>(enemy, count * multiplier, source, null);
             }
         }
-        await NotifyReaction(source, count);
+        await NotifyReaction(source, count * multiplier);
     }
 
     private static async Task NotifyReaction(Creature source, decimal count = 1m)
     {
         TotalReactionsThisCombat += (int)count;
+        ReactionsThisTurn += (int)count; // 新增：记录本回合发生的反应
         if (source?.GetPower<RevenuePower>() is { } rp)
         {
             for (int i = 0; i < (int)count; i++)
@@ -322,7 +404,6 @@ public static class GanyuElementUtils
                 await rp.TriggerReaction();
             }
         }
-        // 新增：处理“高效办公” (EfficiencyPower)
         if (source?.GetPower<EfficiencyPower>() is { } ep)
         {
             for (int i = 0; i < (int)count; i++)
@@ -330,15 +411,224 @@ public static class GanyuElementUtils
                 await ep.TriggerReaction();
             }
         }
-
+        if (source?.GetPower<ChainReactionPower>() is { } crp)
+        {
+            for (int i = 0; i < (int)count; i++)
+            {
+                await crp.TriggerReaction();
+            }
+        }
+        if (source?.GetPower<AdministrativeStreamliningPower>() is { } asp)
+        {
+            for (int i = 0; i < (int)count; i++)
+            {
+                await asp.TriggerReaction();
+            }
+        }
     }
+
     private static async Task ConsumeChargesWithRetention(Creature target, Creature source, CustomPowerModel elementPower, decimal count)
     {
-
-        // 执行实际需要的层数扣除，并使用 await 确保顺序
         for (int i = 0; i < count; i++)
         {
             await PowerCmd.TickDownDuration(elementPower);
         }
+    }
+    public static async Task ApplyIceCharge(Creature source, decimal amount)
+    {
+        if (source == null || amount <= 0) return;
+
+        // 【新增】检查冰元素精通Buff：每次获得充能时额外增加对应的层数
+        if (source.GetPower<RetainElementPower>() is { } retainPower && retainPower.Amount > 0)
+        {
+            amount += retainPower.Amount;
+        }
+
+        decimal oldAmount = source.GetPower<IceChargePower>()?.Amount ?? 0m;
+        decimal total = oldAmount + amount;
+
+        // 1. 计算触发“10层循环”的次数
+        int num10s = (int)(Math.Floor(total / 10m) - Math.Floor(oldAmount / 10m));
+
+        // 2. 计算触发“5层阶段”的次数
+        int num5s = (int)(Math.Floor(total / 10m + (total % 10m >= 5m ? 1m : 0m))
+                       - Math.Floor(oldAmount / 10m + (oldAmount % 10m >= 5m ? 1m : 0m)));
+
+        // 3. 发放奖励
+        if (num10s > 0)
+            await PowerCmd.Apply<HeavenlyFallBuffPower>(source, num10s * 2m, source, null);
+
+        if (num5s > 0)
+            await PowerCmd.Apply<TracesQilinPower>(source, num5s * 3m, source, null);
+
+        // 4. 更新充能层数
+        decimal remainder = total % 10m;
+        var existingPower = source.GetPower<IceChargePower>();
+        if (existingPower != null) await PowerCmd.Remove(existingPower);
+
+        if (remainder > 0)
+            await PowerCmd.Apply<IceChargePower>(source, remainder, source, null);
+    }
+    // 在 GanyuElementUtils 类中添加以下新方法：
+    public static async Task ApplyWaterCharge(Creature source, decimal amount)
+    {
+        if (source == null || amount <= 0) return;
+        // 【新增】检查水元素精通Buff：每次获得充能时额外增加对应的层数
+        if (source.GetPower<HydroMasteryPower>() is { } hydroMastery && hydroMastery.Amount > 0)
+        {
+            amount += hydroMastery.Amount;
+        }
+
+        decimal oldAmount = source.GetPower<WaterChargePower>()?.Amount ?? 0m;
+        decimal total = oldAmount + amount;
+
+        // 计算触发次数
+        int num10s = (int)(Math.Floor(total / 10m) - Math.Floor(oldAmount / 10m));
+        int num5s = (int)(Math.Floor(total / 10m + (total % 10m >= 5m ? 1m : 0m))
+                       - Math.Floor(oldAmount / 10m + (oldAmount % 10m >= 5m ? 1m : 0m)));
+
+        // 达到10层：给予 1 层海人化羽
+        if (num10s > 0)
+            await PowerCmd.Apply<OceanborneFeatherPower>(source, num10s * 1m, source, null);
+
+        // 达到5层：给予 2 层海月之誓
+        if (num5s > 0)
+            await PowerCmd.Apply<OathSilveryMoonPower>(source, num5s * 2m, source, null);
+
+        // 更新充能层数 (满10清零并保留余数)
+        decimal remainder = total % 10m;
+        var existingPower = source.GetPower<WaterChargePower>();
+        if (existingPower != null) await PowerCmd.Remove(existingPower);
+
+        if (remainder > 0)
+            await PowerCmd.Apply<WaterChargePower>(source, remainder, source, null);
+    }
+    public static async Task ApplyFireCharge(Creature source, decimal amount)
+    {
+        if (source == null || amount <= 0) return;
+        // 【新增】检查火元素精通Buff：每次获得充能时额外增加对应的层数
+        if (source.GetPower<PyroMasteryPower>() is { } pyroMastery && pyroMastery.Amount > 0)
+        {
+            amount += pyroMastery.Amount;
+        }
+
+        decimal oldAmount = source.GetPower<FireChargePower>()?.Amount ?? 0m;
+        decimal total = oldAmount + amount;
+
+        // 计算触发次数
+        int num10s = (int)(Math.Floor(total / 10m) - Math.Floor(oldAmount / 10m));
+        int num5s = (int)(Math.Floor(total / 10m + (total % 10m >= 5m ? 1m : 0m))
+                       - Math.Floor(oldAmount / 10m + (oldAmount % 10m >= 5m ? 1m : 0m)));
+
+        // 达到10层：给予 2 层旋火轮
+        if (num10s > 0)
+            await PowerCmd.Apply<PyronadoPower>(source, num10s * 2m, source, null);
+
+        // 达到5层：给予 2 层锅巴出击
+        if (num5s > 0)
+            await PowerCmd.Apply<GuobaAttackPower>(source, num5s * 2m, source, null);
+
+        // 更新充能层数 (满10清零并保留余数)
+        decimal remainder = total % 10m;
+        var existingPower = source.GetPower<FireChargePower>();
+        if (existingPower != null) await PowerCmd.Remove(existingPower);
+
+        if (remainder > 0)
+            await PowerCmd.Apply<FireChargePower>(source, remainder, source, null);
+    }
+    public static async Task ApplyElectroCharge(Creature source, decimal amount)
+    {
+        if (source == null || amount <= 0) return;
+        // 【新增】检查雷元素精通Buff：每次获得充能时额外增加对应的层数
+        if (source.GetPower<ElectroMasteryPower>() is { } electroMastery && electroMastery.Amount > 0)
+        {
+            amount += electroMastery.Amount;
+        }
+
+        decimal oldAmount = source.GetPower<ElectroChargePower>()?.Amount ?? 0m;
+        decimal total = oldAmount + amount;
+
+        // 计算触发次数
+        int num10s = (int)(Math.Floor(total / 10m) - Math.Floor(oldAmount / 10m));
+        int num5s = (int)(Math.Floor(total / 10m + (total % 10m >= 5m ? 1m : 0m))
+                       - Math.Floor(oldAmount / 10m + (oldAmount % 10m >= 5m ? 1m : 0m)));
+
+        // 达到10层：给予 1 层奥义·梦想真说
+        if (num10s > 0)
+            await PowerCmd.Apply<MusouShinsetsuPower>(source, num10s * 1m, source, null);
+
+        // 达到5层：给予 2 层神变·恶曜开眼
+        if (num5s > 0)
+            await PowerCmd.Apply<BalefulOmenPower>(source, num5s * 2m, source, null);
+
+        // 更新充能层数 (满10清零并保留余数)
+        decimal remainder = total % 10m;
+        var existingPower = source.GetPower<ElectroChargePower>();
+        if (existingPower != null) await PowerCmd.Remove(existingPower);
+
+        if (remainder > 0)
+            await PowerCmd.Apply<ElectroChargePower>(source, remainder, source, null);
+    }
+    public static async Task ApplyRockCharge(Creature source, decimal amount)
+    {
+        if (source == null || amount <= 0) return;
+        // 【新增】检查岩元素精通Buff：每次获得充能时额外增加对应的层数
+        if (source.GetPower<GeoMasteryPower>() is { } geoMastery && geoMastery.Amount > 0)
+        {
+            amount += geoMastery.Amount;
+        }
+
+        decimal oldAmount = source.GetPower<RockChargePower>()?.Amount ?? 0m;
+        decimal total = oldAmount + amount;
+
+        int num10s = (int)(Math.Floor(total / 10m) - Math.Floor(oldAmount / 10m));
+        int num5s = (int)(Math.Floor(total / 10m + (total % 10m >= 5m ? 1m : 0m))
+                       - Math.Floor(oldAmount / 10m + (oldAmount % 10m >= 5m ? 1m : 0m)));
+
+        // 达到10层：给予 1 层天星
+        if (num10s > 0)
+            await PowerCmd.Apply<StarfallPower>(source, num10s * 1m, source, null);
+
+        // 达到5层：给予 2 层玉璋护盾
+        if (num5s > 0)
+            await PowerCmd.Apply<JadeShieldPower>(source, num5s * 2m, source, null);
+
+        decimal remainder = total % 10m;
+        var existingPower = source.GetPower<RockChargePower>();
+        if (existingPower != null) await PowerCmd.Remove(existingPower);
+
+        if (remainder > 0)
+            await PowerCmd.Apply<RockChargePower>(source, remainder, source, null);
+    }
+    public static async Task ApplyWindCharge(Creature source, decimal amount)
+    {
+        if (source == null || amount <= 0) return;
+        // 【新增】检查风元素精通Buff：每次获得充能时额外增加对应的层数
+        if (source.GetPower<AnemoMasteryPower>() is { } anemoMastery && anemoMastery.Amount > 0)
+        {
+            amount += anemoMastery.Amount;
+        }
+
+        decimal oldAmount = source.GetPower<WindChargePower>()?.Amount ?? 0m;
+        decimal total = oldAmount + amount;
+
+        int num10s = (int)(Math.Floor(total / 10m) - Math.Floor(oldAmount / 10m));
+        int num5s = (int)(Math.Floor(total / 10m + (total % 10m >= 5m ? 1m : 0m))
+                       - Math.Floor(oldAmount / 10m + (oldAmount % 10m >= 5m ? 1m : 0m)));
+
+        // 达到10层：给予 3 层禁·风灵作成·柒伍同构贰型
+        if (num10s > 0)
+            await PowerCmd.Apply<ForbiddenWindSpirit75Power>(source, num10s * 3m, source, null);
+
+        // 达到5层：给予 1 层风灵作成·陆叁零捌
+        if (num5s > 0)
+            await PowerCmd.Apply<WindSpirit6308Power>(source, num5s * 1m, source, null);
+
+        decimal remainder = total % 10m;
+        var existingPower = source.GetPower<WindChargePower>();
+        if (existingPower != null) await PowerCmd.Remove(existingPower);
+
+        if (remainder > 0)
+            await PowerCmd.Apply<WindChargePower>(source, remainder, source, null);
     }
 }

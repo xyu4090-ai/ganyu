@@ -1,3 +1,4 @@
+using BaseLib.Extensions;
 using BaseLib.Utils;
 using Ganyu.Scripts.Powers;
 using Ganyu.Scripts.Utils;
@@ -25,7 +26,7 @@ public class IceArrow : GanyuCardModel
         HoverTipFactory.FromPower<IcePower>()
     ];
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new DamageVar(6m, ValueProp.Move), // 基础伤害 6 [cite: 482]
+        new DamageVar(9m, ValueProp.Move), // 基础伤害 6 [cite: 482]
         new PowerVar<IcePower>(1m)        // 风元素标记 1 层
     ];
 
@@ -45,5 +46,6 @@ public class IceArrow : GanyuCardModel
     protected override void OnUpgrade()
     {
         base.DynamicVars.Damage.UpgradeValueBy(3m);
+        base.DynamicVars.Power<IcePower>().UpgradeValueBy(1m);
     }
 }
