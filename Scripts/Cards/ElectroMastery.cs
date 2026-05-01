@@ -14,7 +14,7 @@ namespace Ganyu.Scripts.Cards;
 public sealed class ElectroMastery : GanyuCardModel
 {
     // 费用为1，类型为能力牌，稀有度设为罕见（Uncommon）
-    public ElectroMastery() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
+    public ElectroMastery() : base(1, CardType.Power, CardRarity.Rare, TargetType.Self, true)
     {
     }
 
@@ -26,7 +26,7 @@ public sealed class ElectroMastery : GanyuCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // 赋予玩家“雷元素精通”能力
-        await PowerCmd.Apply<ElectroMasteryPower>(
+        await PowerCmd.Apply<ElectroMasteryPower>(choiceContext,
             base.Owner.Creature, 
             base.DynamicVars.Power<ElectroMasteryPower>().BaseValue, 
             base.Owner.Creature, 
@@ -37,6 +37,6 @@ public sealed class ElectroMastery : GanyuCardModel
     protected override void OnUpgrade()
     {
         // 升级效果：赋予“固有”属性
-        AddKeyword(CardKeyword.Innate);
+        base.EnergyCost.UpgradeBy(-1);
     }
 }

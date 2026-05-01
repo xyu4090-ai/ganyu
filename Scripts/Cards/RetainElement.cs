@@ -13,7 +13,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class RetainElement : GanyuCardModel
 {
-    public RetainElement() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
+    public RetainElement() : base(1, CardType.Power, CardRarity.Rare, TargetType.Self, true)
     {
     }
 
@@ -25,7 +25,7 @@ public sealed class RetainElement : GanyuCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // 赋予玩家修改后的“冰元素精通”能力
-        await PowerCmd.Apply<RetainElementPower>(
+        await PowerCmd.Apply<RetainElementPower>(choiceContext,
             base.Owner.Creature, 
             base.DynamicVars.Power<RetainElementPower>().BaseValue, 
             base.Owner.Creature, 
@@ -35,7 +35,6 @@ public sealed class RetainElement : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果可以保持“固有”，或者改为增加层数。这里保留固有属性
-        AddKeyword(CardKeyword.Innate);
+        base.EnergyCost.UpgradeBy(-1);
     }
 }

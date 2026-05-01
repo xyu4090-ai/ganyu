@@ -16,8 +16,8 @@ public sealed class GaleForce : GanyuCardModel
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new DamageVar(10m, ValueProp.Move), // 基础伤害 10
-        new CardsVar(1)                    // 抽牌数量 1
+        new DamageVar(8m, ValueProp.Move), // 基础伤害 10
+        new CardsVar(2)                    // 抽牌数量 1
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -46,6 +46,7 @@ public sealed class GaleForce : GanyuCardModel
     protected override void OnUpgrade()
     {
         // 升级：伤害增加 4 点 (10 -> 14)
-        base.DynamicVars.Damage.UpgradeValueBy(4m);
+        base.DynamicVars.Damage.UpgradeValueBy(3m);
+        base.DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

@@ -27,7 +27,7 @@ public class IceArrow : GanyuCardModel
     ];
     protected override IEnumerable<DynamicVar> CanonicalVars => [
         new DamageVar(9m, ValueProp.Move), // 基础伤害 6 [cite: 482]
-        new PowerVar<IcePower>(1m)        // 风元素标记 1 层
+        new PowerVar<IcePower>(1m)        
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -40,7 +40,7 @@ public class IceArrow : GanyuCardModel
             .Execute(choiceContext);
         await ActionWithContext(choiceContext, async () =>
         {
-            await GanyuElementUtils.ApplyIceReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies);
+            await GanyuElementUtils.ApplyIceReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies,base.DynamicVars.Power<IcePower>().BaseValue);
         });
     }
     protected override void OnUpgrade()

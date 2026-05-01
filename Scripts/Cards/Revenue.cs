@@ -13,7 +13,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class Revenue : GanyuCardModel
 {
-    public Revenue() : base(2, CardType.Power, CardRarity.Rare, TargetType.Self, true)
+    public Revenue() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
     {
     }
 
@@ -24,7 +24,7 @@ public sealed class Revenue : GanyuCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // 赋予玩家 1 层能力（1 层代表 1 费）
-        await PowerCmd.Apply<RevenuePower>(base.Owner.Creature, 1m, base.Owner.Creature, this);
+        await PowerCmd.Apply<RevenuePower>(choiceContext,base.Owner.Creature, 1m, base.Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

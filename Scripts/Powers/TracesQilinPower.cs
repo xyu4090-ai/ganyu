@@ -14,7 +14,7 @@ public class TracesQilinPower : CustomPowerModel
     public override string? CustomBigIconPath => "res://Ganyu/images/powers/traces_qilin_power.png";
 
     // 回合开始时触发
-    public override async Task AfterSideTurnStart( CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart( CombatSide side, ICombatState ICombatState)
     {
         if (side == base.Owner.Side)
         {

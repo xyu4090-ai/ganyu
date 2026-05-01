@@ -39,7 +39,7 @@ public class ElectroArrow : GanyuCardModel
             .Execute(choiceContext);
         await ActionWithContext(choiceContext, async () =>
         {
-            await GanyuElementUtils.ApplyElectroReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies);
+            await GanyuElementUtils.ApplyElectroReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies,base.DynamicVars.Power<ElectroPower>().BaseValue);
         });
     }
     protected override void OnUpgrade()

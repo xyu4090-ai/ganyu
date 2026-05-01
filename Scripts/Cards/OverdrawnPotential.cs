@@ -14,12 +14,12 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class OverdrawnPotential : GanyuCardModel
 {
-    public OverdrawnPotential() : base(0, CardType.Power, CardRarity.Rare, TargetType.Self, true)
+    public OverdrawnPotential() : base(0, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
     {
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new CardsVar(4),    // 初始抽 4 张
+        new CardsVar(3),    // 初始抽 4 张
         new EnergyVar(2)    // 获得 2 点能量
     ];
 
@@ -37,14 +37,12 @@ public sealed class OverdrawnPotential : GanyuCardModel
         await PlayerCmd.GainEnergy(base.DynamicVars.Energy.IntValue, base.Owner);
 
         // 3. 赋予“透支潜力”扣血能力
-        (await PowerCmd.Apply<OverdrawnPotentialPower>(base.Owner.Creature, 1m, base.Owner.Creature, this))?.IncrementSelfDamage();
+        (await PowerCmd.Apply<OverdrawnPotentialPower>(choiceContext,base.Owner.Creature, 1m, base.Owner.Creature, this))?.IncrementSelfDamage();
     }
 
     protected override void OnUpgrade()
     {
         // 升级效果：抽牌 4 -> 5
         base.DynamicVars.Cards.UpgradeValueBy(1m);
-        // 增加“固有”词条
-        AddKeyword(CardKeyword.Innate);
     }
 }

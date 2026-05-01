@@ -91,9 +91,13 @@ public class HeavenlyFallUP : CustomRelicModel
             InvokeDisplayAmountChanged();
         }
     }
-
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side, ICombatState ICombatState)
     {
+        if (side == base.Owner.Creature.Side && ICombatState.RoundNumber <= 1)
+        {
+            Flash();
+            await PowerCmd.Apply<IcePower>(choiceContext, ICombatState.HittableEnemies, base.DynamicVars["IcePower"].BaseValue, base.Owner.Creature, null);
+        }
         if (side == base.Owner.Creature.Side)
         {
             TurnsSeen = (TurnsSeen + 1) % base.DynamicVars["Turns"].IntValue;
@@ -101,17 +105,9 @@ public class HeavenlyFallUP : CustomRelicModel
             if (TurnsSeen == 0)
             {
                 await PlayerCmd.GainEnergy(base.DynamicVars.Energy.BaseValue, base.Owner);
-                await PowerCmd.Apply<DewNectarPower>(base.Owner.Creature, 1m, base.Owner.Creature, null);
+                await PowerCmd.Apply<DewNectarPower>(choiceContext,base.Owner.Creature, 1m, base.Owner.Creature, null);
                 Flash();
             }
-        }
-    }
-    public override async Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side, CombatState combatState)
-    {
-        if (side == base.Owner.Creature.Side && combatState.RoundNumber <= 1)
-        {
-            Flash();
-            await PowerCmd.Apply<IcePower>(combatState.HittableEnemies, base.DynamicVars["IcePower"].BaseValue, base.Owner.Creature, null);
         }
     }
 

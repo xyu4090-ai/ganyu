@@ -16,7 +16,7 @@ public class MusouShinsetsuPower : CustomPowerModel
     public override string? CustomPackedIconPath => "res://Ganyu/images/powers/musou_shinsetsu.png";
     public override string? CustomBigIconPath => "res://Ganyu/images/powers/musou_shinsetsu.png";
 
-    public override async Task BeforeHandDraw(Player player, PlayerChoiceContext choiceContext, CombatState combatState)
+    public override async Task BeforeHandDraw(Player player, PlayerChoiceContext choiceContext, ICombatState ICombatState)
     {
         if (player == base.Owner.Player)
         {
@@ -25,7 +25,7 @@ public class MusouShinsetsuPower : CustomPowerModel
             decimal totalElectroRemoved = 0;
             
             // 移除所有敌人的雷元素并计算总层数
-            foreach (var enemy in combatState.HittableEnemies)
+            foreach (var enemy in ICombatState.HittableEnemies)
             {
                 if (enemy.IsAlive)
                 {
@@ -40,10 +40,10 @@ public class MusouShinsetsuPower : CustomPowerModel
             }
 
             // 计算最终伤害：15 + (每移除1层额外5点)
-            decimal finalDamage = 15m + (5m * totalElectroRemoved);
+            decimal finalDamage = 25m + (5m * totalElectroRemoved);
             
             // 对全体敌人造成伤害
-            await CreatureCmd.Damage(choiceContext, combatState.HittableEnemies, finalDamage, ValueProp.Unpowered, base.Owner, null);
+            await CreatureCmd.Damage(choiceContext, ICombatState.HittableEnemies, finalDamage, ValueProp.Unpowered, base.Owner, null);
             
             // 触发后减少一层
             await PowerCmd.TickDownDuration(this);

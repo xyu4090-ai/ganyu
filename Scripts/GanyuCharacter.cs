@@ -30,9 +30,9 @@ public class GanyuCharacter : PlaceholderCharacterModel
     // 能量表盘tscn路径。要自定义见下。
     public override string CustomEnergyCounterPath => "res://Ganyu/scenes/Ganyu_energy_counter.tscn";
     // 篝火休息场景。
-    // public override string CustomRestSiteAnimPath => "res://scenes/rest_site/characters/ironclad_rest_site.tscn";
+    // public override string CustomRestSiteAnimPath => "res://Ganyu/scenes/ganyu_rest_site.tscn";
     // 商店人物场景。
-    // public override string CustomMerchantAnimPath => "res://scenes/merchant/characters/ironclad_merchant.tscn";
+    public override string CustomMerchantAnimPath => "res://Ganyu/scenes/ganyu_merchant.tscn";
     // 多人模式-手指。
     public override string CustomArmPointingTexturePath => "res://Ganyu/hand/multiplayer_hand_ganyu_point.png";
     // 多人模式剪刀石头布-石头。
@@ -59,7 +59,7 @@ public class GanyuCharacter : PlaceholderCharacterModel
     // 死亡音效
     // public override string CustomDeathSfx => null;
     // 角色选择音效
-    // public override string CharacterSelectSfx => null;
+    // public override string CharacterSelectSfx => "res://Ganyu/audios/select_bgm.wav";
     // 过渡音效。这个不能删。
     public override string CharacterTransitionSfx => "event:/sfx/ui/wipe_ironclad";
 

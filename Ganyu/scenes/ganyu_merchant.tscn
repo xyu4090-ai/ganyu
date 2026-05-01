@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://bndhni7h3a506"]
+
+[ext_resource type="Script" uid="uid://cobaciduqtpa7" path="res://Scripts/Nodes/MyCustomMerchantCharacter.cs" id="1_eag5k"]
+[ext_resource type="Texture2D" uid="uid://gbxu70um2kkj" path="res://Ganyu/animation/ganyuidol.png" id="2_eag5k"]
+
+[node name="GanyuMerchant" type="Node2D"]
+script = ExtResource("1_eag5k")
+
+[node name="Visuals" type="Sprite2D" parent="."]
+position = Vector2(34, -174)
+scale = Vector2(0.44252077, 0.38436034)
+texture = ExtResource("2_eag5k")
+hframes = 10
+vframes = 6
+frame = 53

@@ -14,14 +14,14 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class StoneGuard : GanyuCardModel
 {
-    public StoneGuard() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.AnyEnemy, true)
+    public StoneGuard() : base(1, CardType.Skill, CardRarity.Common, TargetType.AnyEnemy, true)
     {
     }
     protected override IEnumerable<DynamicVar> CanonicalVars => [
         // 初始格挡 8 点
         new BlockVar(8m, ValueProp.Move),   
         // 初始给予 2 层岩元素
-        new PowerVar<RockPower>(2m)
+        new PowerVar<RockPower>(1m)
     ];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [

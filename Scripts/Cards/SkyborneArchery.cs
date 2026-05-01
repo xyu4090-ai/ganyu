@@ -20,22 +20,16 @@ public sealed class SkyborneArchery : GanyuCardModel
     private const int energyCost = 0;
     private const CardType type = CardType.Attack;
     private const CardRarity rarity = CardRarity.Basic;
-    public override TargetType TargetType
-    {
-        get
-        {
-            if (!IsUpgraded)
-            {
-                return TargetType.AnyEnemy;
-            }
-            return TargetType.AllEnemies;
-        }
-    }
     public SkyborneArchery() : base(energyCost, type, rarity, TargetType.AnyEnemy, true)
     {
     }
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [
-        HoverTipFactory.FromPower<WetPower>()
+        // 提示玩家可能触发的各种元素效果
+        HoverTipFactory.FromPower<Ganyu.Scripts.Powers.WetPower>(),
+        HoverTipFactory.FromPower<Ganyu.Scripts.Powers.FlamePower>(),
+        HoverTipFactory.FromPower<Ganyu.Scripts.Powers.ElectroPower>(),
+        HoverTipFactory.FromPower<Ganyu.Scripts.Powers.WindPower>(),
+        HoverTipFactory.FromPower<Ganyu.Scripts.Powers.RockPower>()
     ];
     protected override IEnumerable<DynamicVar> CanonicalVars => [
         new DamageVar(3m, ValueProp.Move),
@@ -46,39 +40,25 @@ public sealed class SkyborneArchery : GanyuCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         AttackCommand attack = DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this);
-        if (IsUpgraded)
-        {
-            // 1. 全体攻击逻辑
-            attack = attack.TargetingAllOpponents(base.CombatState);
-        }
-        else
-        {
-            // 普通版：单体攻击
-            attack = attack.Targeting(cardPlay.Target);
-            // 单体反应逻辑
-
-        }
+        // 普通版：单体攻击
+        attack = attack.Targeting(cardPlay.Target);
+        // 单体反应逻辑
         await attack.Execute(choiceContext);
-        if (IsUpgraded)
+
+        if (cardPlay.Target == null || !cardPlay.Target.IsAlive) return;
+        // 使用游戏的随机数生成器选择一个元素 (0-4)
+        int choice = base.Owner.RunState.Rng.CombatCardSelection.NextInt(0, 5);
+        await ActionWithContext(choiceContext, async () =>
         {
-            foreach (Creature enemy in base.CombatState.HittableEnemies)
+            switch (choice)
             {
-                if (enemy.IsAlive)
-                {
-                    await ActionWithContext(choiceContext, async () =>
-                    {
-                        await GanyuElementUtils.ApplyWaterReaction(enemy, base.Owner.Creature, base.CombatState.HittableEnemies);
-                    });
-                }
+                case 0: await GanyuElementUtils.ApplyWaterReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
+                case 1: await GanyuElementUtils.ApplyFireReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
+                case 2: await GanyuElementUtils.ApplyElectroReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
+                case 3: await GanyuElementUtils.ApplyWindReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
+                case 4: await GanyuElementUtils.ApplyRockReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
             }
-        }
-        else
-        {
-            await ActionWithContext(choiceContext, async () =>
-            {
-                await GanyuElementUtils.ApplyWaterReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies);
-            });
-        }
+        });
 
     }
 

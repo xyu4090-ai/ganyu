@@ -16,7 +16,7 @@ public class OathSilveryMoonPower : CustomPowerModel
     public override string? CustomBigIconPath => "res://Ganyu/images/powers/oath_silvery_moon.png";
 
     // 回合开始时触发
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, ICombatState ICombatState)
     {
         if (side == base.Owner.Side)
         {
@@ -26,11 +26,11 @@ public class OathSilveryMoonPower : CustomPowerModel
             await CreatureCmd.Heal(base.Owner, 2m);
 
             // 给予所有敌人一层水元素
-            foreach (var enemy in combatState.HittableEnemies)
+            foreach (var enemy in ICombatState.HittableEnemies)
             {
                 if (enemy.IsAlive)
                 {
-                    await GanyuElementUtils.ApplyWaterReaction(enemy, base.Owner, combatState.HittableEnemies, 1m);
+                    await GanyuElementUtils.ApplyWaterReaction(enemy, base.Owner, ICombatState.HittableEnemies, 1m);
                 }
             }
 

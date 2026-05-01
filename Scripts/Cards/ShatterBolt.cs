@@ -16,7 +16,7 @@ public sealed class ShatterBolt : GanyuCardModel
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [
         new CalculationBaseVar(8m),    // 基础伤害
-        new ExtraDamageVar(10m),      // 额外的碎冰伤害
+        new ExtraDamageVar(4m),      // 额外的碎冰伤害
         // 核心逻辑：使用 CalculatedDamageVar 自动计算最终伤害
         // 最终伤害公式 = CalculationBase + (ExtraDamage * Multiplier)
         new CalculatedDamageVar(ValueProp.Move).WithMultiplier((CardModel card, Creature? target) => 
@@ -51,6 +51,6 @@ public sealed class ShatterBolt : GanyuCardModel
     {
         // 升级：基础伤害 +3 (11)，额外伤害 +4 (14)
         base.DynamicVars.CalculationBase.UpgradeValueBy(3m);
-        base.DynamicVars.ExtraDamage.UpgradeValueBy(4m);
+        base.DynamicVars.ExtraDamage.UpgradeValueBy(2m);
     }
 }

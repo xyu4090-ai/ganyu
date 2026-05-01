@@ -40,7 +40,7 @@ public class WindArrow : GanyuCardModel
             .Execute(choiceContext);
         await ActionWithContext(choiceContext, async () =>
         {
-            await GanyuElementUtils.ApplyWindReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies);
+            await GanyuElementUtils.ApplyWindReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies,base.DynamicVars.Power<WindPower>().BaseValue);
         });
     }
     protected override void OnUpgrade()

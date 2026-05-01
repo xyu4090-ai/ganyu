@@ -19,6 +19,7 @@ public sealed class CondensedFrost : GanyuCardModel
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
+        new BlockVar(5m, ValueProp.Move),
         // 初始给予 2 层冰元素
         new PowerVar<IcePower>(2m)
     ];
@@ -34,9 +35,9 @@ public sealed class CondensedFrost : GanyuCardModel
         await ActionWithContext(choiceContext, async () =>
         {
             await GanyuElementUtils.ApplyIceReaction(
-                cardPlay.Target, 
-                base.Owner.Creature, 
-                base.CombatState.HittableEnemies, 
+                cardPlay.Target,
+                base.Owner.Creature,
+                base.CombatState.HittableEnemies,
                 base.DynamicVars.Power<IcePower>().BaseValue
             );
         });
@@ -46,5 +47,6 @@ public sealed class CondensedFrost : GanyuCardModel
     {
         // 升级后层数增加 1 (2 -> 3)
         base.DynamicVars.Power<IcePower>().UpgradeValueBy(1m);
+        base.DynamicVars.Block.UpgradeValueBy(3m);
     }
 }

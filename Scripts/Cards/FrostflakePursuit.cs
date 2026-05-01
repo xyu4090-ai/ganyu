@@ -19,7 +19,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class FrostflakePursuit : GanyuCardModel
 {
-    public FrostflakePursuit() : base(2, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy, true)
+    public FrostflakePursuit() : base(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy, true)
     {
     }
 
@@ -62,6 +62,7 @@ public sealed class FrostflakePursuit : GanyuCardModel
     {
         // 升级效果：伤害增加 4 点 (12 -> 16)
         base.DynamicVars.Damage.UpgradeValueBy(4m);
+        base.DynamicVars.Power<IcePower>().UpgradeValueBy(1m);
     }
 
     // --- 以下是动态减费的核心逻辑 ---
@@ -88,7 +89,7 @@ public sealed class FrostflakePursuit : GanyuCardModel
     }
 
     // 当回合开始时检查（用于处理遗物在回合开始阶段触发的反应）
-    public override Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override Task AfterSideTurnStart(CombatSide side, ICombatState ICombatState)
     {
         if (side == base.Owner.Creature.Side && GanyuElementUtils.ReactionsThisTurn > 0)
         {

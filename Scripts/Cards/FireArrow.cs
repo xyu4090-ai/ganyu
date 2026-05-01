@@ -40,7 +40,7 @@ public class FireArrow : GanyuCardModel
             .Execute(choiceContext);
         await ActionWithContext(choiceContext, async () =>
         {
-            await GanyuElementUtils.ApplyFireReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies);
+            await GanyuElementUtils.ApplyFireReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies,base.DynamicVars.Power<FlamePower>().BaseValue);
         });
     }
     protected override void OnUpgrade()

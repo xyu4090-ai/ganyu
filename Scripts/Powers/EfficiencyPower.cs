@@ -33,7 +33,7 @@ public sealed class EfficiencyPower : CustomPowerModel
     }
 
     // 回合结束移除自身 (实现“本回合内”效果)
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, ICombatState CombatState)
     {
         // 如果到了对方回合开始，说明我方回合已结束
         if (side != base.Owner.Side)

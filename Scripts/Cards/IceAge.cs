@@ -1,4 +1,5 @@
 
+using BaseLib.Extensions;
 using BaseLib.Utils;
 using Ganyu.Scripts.Powers;
 using Ganyu.Scripts.Utils;
@@ -13,13 +14,13 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class IceAge : GanyuCardModel
 {
-    public IceAge() : base(2, CardType.Skill, CardRarity.Rare, TargetType.AllEnemies, true)
+    public IceAge() : base(1, CardType.Skill, CardRarity.Rare, TargetType.AllEnemies, true)
     {
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
         // 对应 JSON 中的 {IcePower}，赋予 99 层冰元素
-        new PowerVar<IcePower>(99m)
+        new PowerVar<IcePower>(5m)
     ];
 
     // 显式声明消耗关键字，使其在卡牌界面正确显示
@@ -34,7 +35,7 @@ public sealed class IceAge : GanyuCardModel
             {
                 await ActionWithContext(choiceContext, async () =>
                 {
-                    await GanyuElementUtils.ApplyIceReaction(enemy, base.Owner.Creature, base.CombatState.HittableEnemies,99);
+                    await GanyuElementUtils.ApplyIceReaction(enemy, base.Owner.Creature, base.CombatState.HittableEnemies,base.DynamicVars.Power<IcePower>().BaseValue);
                 });
             }
         }

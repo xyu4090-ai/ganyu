@@ -56,7 +56,7 @@ public class CryaTheory : CustomRelicModel
         GanyuElementUtils.ResetReactionCount();
 
     }
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, ICombatState ICombatState)
     {
         // 如果是玩家回合开始，重置本回合的反应计数器
         if (side == base.Owner.Creature.Side)

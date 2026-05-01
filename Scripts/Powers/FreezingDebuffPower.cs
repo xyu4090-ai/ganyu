@@ -38,7 +38,7 @@ public class FreezingDebuffPower : CustomPowerModel
         if (base.CombatState == null) return;
         
         decimal multiplier = 0.6m; // 基础受伤 60% (减伤 40%)
-        var player = base.CombatState.Players.FirstOrDefault()?.Creature;
+        var player = this.Applier;
         
         if (player != null)
         {

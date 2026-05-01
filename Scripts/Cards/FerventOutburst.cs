@@ -16,7 +16,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class FerventOutburst : GanyuCardModel
 {
-    public FerventOutburst() : base(0, CardType.Skill, CardRarity.Rare, TargetType.AnyEnemy, true)
+    public FerventOutburst() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.AnyEnemy, true)
     {
     }
 
@@ -50,7 +50,7 @@ public sealed class FerventOutburst : GanyuCardModel
             });
 
             // 2. 施加炎化状态
-            await PowerCmd.Apply<IgnitionPower>(
+            await PowerCmd.Apply<IgnitionPower>(choiceContext,
                 cardPlay.Target, 
                 base.DynamicVars.Power<IgnitionPower>().BaseValue, 
                 base.Owner.Creature, 
@@ -62,6 +62,5 @@ public sealed class FerventOutburst : GanyuCardModel
     protected override void OnUpgrade()
     {
         base.DynamicVars.Power<FlamePower>().UpgradeValueBy(2m);
-        base.DynamicVars.Power<IgnitionPower>().UpgradeValueBy(1m); // 升级后增加 1 层炎化（总计 2 层）
     }
 }

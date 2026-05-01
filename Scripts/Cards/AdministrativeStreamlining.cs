@@ -12,7 +12,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class AdministrativeStreamlining : GanyuCardModel
 {
-    public AdministrativeStreamlining() : base(2, CardType.Power, CardRarity.Rare, TargetType.Self, true)
+    public AdministrativeStreamlining() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
     {
     }
 
@@ -23,7 +23,7 @@ public sealed class AdministrativeStreamlining : GanyuCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // 赋予玩家能力
-        await PowerCmd.Apply<AdministrativeStreamliningPower>(
+        await PowerCmd.Apply<AdministrativeStreamliningPower>(choiceContext,
             base.Owner.Creature, 
             1m, 
             base.Owner.Creature, 
@@ -33,7 +33,6 @@ public sealed class AdministrativeStreamlining : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级后获得“固有”属性
-        AddKeyword(CardKeyword.Innate);
+        base.EnergyCost.UpgradeBy(-1);
     }
 }

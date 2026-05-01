@@ -25,7 +25,7 @@ public sealed class Qingxin : GanyuCardModel
     }
 
     // 官方标准的生成卡牌方法
-    public static IEnumerable<Qingxin> Create(Player owner, int amount, CombatState combatState)
+    public static IEnumerable<Qingxin> Create(Player owner, int amount, ICombatState combatState)
     {
         List<Qingxin> list = new List<Qingxin>();
         for (int i = 0; i < amount; i++)
@@ -46,6 +46,6 @@ public sealed class Qingxin : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        base.DynamicVars["Heal"].UpgradeValueBy(6m);
+        base.DynamicVars["Heal"].UpgradeValueBy(3m);
     }
 }

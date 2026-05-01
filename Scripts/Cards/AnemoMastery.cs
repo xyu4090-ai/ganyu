@@ -14,7 +14,7 @@ namespace Ganyu.Scripts.Cards;
 public sealed class AnemoMastery : GanyuCardModel
 {
     // 费用为1，类型为能力牌，稀有度设为罕见（Uncommon）
-    public AnemoMastery() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
+    public AnemoMastery() : base(1, CardType.Power, CardRarity.Rare, TargetType.Self, true)
     {
     }
 
@@ -26,7 +26,7 @@ public sealed class AnemoMastery : GanyuCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // 赋予玩家“风元素精通”能力
-        await PowerCmd.Apply<AnemoMasteryPower>(
+        await PowerCmd.Apply<AnemoMasteryPower>(choiceContext,
             base.Owner.Creature, 
             base.DynamicVars.Power<AnemoMasteryPower>().BaseValue, 
             base.Owner.Creature, 
@@ -37,6 +37,6 @@ public sealed class AnemoMastery : GanyuCardModel
     protected override void OnUpgrade()
     {
         // 升级效果：赋予“固有”属性
-        AddKeyword(CardKeyword.Innate);
+        base.EnergyCost.UpgradeBy(-1);
     }
 }

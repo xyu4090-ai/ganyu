@@ -14,7 +14,7 @@ namespace Ganyu.Scripts.Cards;
 public sealed class HydroMastery : GanyuCardModel
 {
     // 费用为1，类型为能力牌，稀有度设为罕见（Uncommon）
-    public HydroMastery() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
+    public HydroMastery() : base(1, CardType.Power, CardRarity.Rare, TargetType.Self, true)
     {
     }
 
@@ -26,10 +26,10 @@ public sealed class HydroMastery : GanyuCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // 赋予玩家“水元素精通”能力
-        await PowerCmd.Apply<HydroMasteryPower>(
-            base.Owner.Creature, 
-            base.DynamicVars.Power<HydroMasteryPower>().BaseValue, 
-            base.Owner.Creature, 
+        await PowerCmd.Apply<HydroMasteryPower>(choiceContext,
+            base.Owner.Creature,
+            base.DynamicVars.Power<HydroMasteryPower>().BaseValue,
+            base.Owner.Creature,
             this
         );
     }
@@ -37,6 +37,6 @@ public sealed class HydroMastery : GanyuCardModel
     protected override void OnUpgrade()
     {
         // 升级效果：赋予“固有”属性
-        AddKeyword(CardKeyword.Innate);
+        base.EnergyCost.UpgradeBy(-1);
     }
 }

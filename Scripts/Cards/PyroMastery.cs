@@ -14,7 +14,7 @@ namespace Ganyu.Scripts.Cards;
 public sealed class PyroMastery : GanyuCardModel
 {
     // 费用为1，类型为能力牌，稀有度设为罕见（Uncommon）
-    public PyroMastery() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
+    public PyroMastery() : base(1, CardType.Power, CardRarity.Rare, TargetType.Self, true)
     {
     }
 
@@ -26,7 +26,7 @@ public sealed class PyroMastery : GanyuCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // 赋予玩家“火元素精通”能力
-        await PowerCmd.Apply<PyroMasteryPower>(
+        await PowerCmd.Apply<PyroMasteryPower>(choiceContext,
             base.Owner.Creature, 
             base.DynamicVars.Power<PyroMasteryPower>().BaseValue, 
             base.Owner.Creature, 
@@ -37,6 +37,6 @@ public sealed class PyroMastery : GanyuCardModel
     protected override void OnUpgrade()
     {
         // 升级效果：赋予“固有”属性
-        AddKeyword(CardKeyword.Innate);
+        base.EnergyCost.UpgradeBy(-1);
     }
 }

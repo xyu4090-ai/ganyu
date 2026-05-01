@@ -39,12 +39,12 @@ public class CocogoatPower : CustomPowerModel
 		}
 		return amount + (decimal)base.Amount;
 	}
-    public override async Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side, CombatState combatState)
+    public override async Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side, ICombatState ICombatState)
     {
         if (side == base.Owner.Side)
         {
             Flash();
-            await PowerCmd.Apply<IcePower>(combatState.HittableEnemies, 1, base.Owner, null);
+            await PowerCmd.Apply<IcePower>(choiceContext,ICombatState.HittableEnemies, 1, base.Owner, null);
         }
     }
 }

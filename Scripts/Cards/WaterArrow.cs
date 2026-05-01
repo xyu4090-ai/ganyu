@@ -40,7 +40,7 @@ public class WaterArrow : GanyuCardModel
             .Execute(choiceContext);
         await ActionWithContext(choiceContext, async () =>
         {
-            await GanyuElementUtils.ApplyWaterReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies);
+            await GanyuElementUtils.ApplyWaterReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies,base.DynamicVars.Power<WetPower>().BaseValue);
         });
     }
     protected override void OnUpgrade()

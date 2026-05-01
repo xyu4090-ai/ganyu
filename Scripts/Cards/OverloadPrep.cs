@@ -13,12 +13,11 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class OverloadPrep : GanyuCardModel
 {
-    public OverloadPrep() : base(1, CardType.Skill, CardRarity.Rare, TargetType.Self, true)
+    public OverloadPrep() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self, true)
     {
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new BlockVar(10m, ValueProp.Move),
         new PowerVar<OverloadPrepPower>(1m)
     ];
 
@@ -28,11 +27,8 @@ public sealed class OverloadPrep : GanyuCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // 1. 获得格挡
-        await CreatureCmd.GainBlock(base.Owner.Creature, base.DynamicVars.Block, cardPlay);
-
         // 2. 赋予“反应预载”状态
-        await PowerCmd.Apply<OverloadPrepPower>(
+        await PowerCmd.Apply<OverloadPrepPower>(choiceContext,
             base.Owner.Creature, 
             base.DynamicVars.Power<OverloadPrepPower>().BaseValue, 
             base.Owner.Creature, 
@@ -42,7 +38,6 @@ public sealed class OverloadPrep : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级：格挡 9 -> 12
-        base.DynamicVars.Block.UpgradeValueBy(5m);
+        base.EnergyCost.UpgradeBy(-1);
     }
 }

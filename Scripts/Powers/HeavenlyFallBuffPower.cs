@@ -20,7 +20,7 @@ public class HeavenlyFallBuffPower : CustomPowerModel
         new EnergyVar(1),
     ];
 
-    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, ICombatState ICombatState)
     {
         if (side == base.Owner.Side && base.Owner.Player != null)
         {
@@ -30,11 +30,11 @@ public class HeavenlyFallBuffPower : CustomPowerModel
 
             // 3. 全体 1 层冰元素
             // 这里调用工具类触发反应检查
-            foreach (var enemy in combatState.HittableEnemies)
+            foreach (var enemy in ICombatState.HittableEnemies)
             {
                 if (enemy.IsAlive)
                 {
-                    await GanyuElementUtils.ApplyIceReaction(enemy, base.Owner, combatState.HittableEnemies, 1m);
+                    await GanyuElementUtils.ApplyIceReaction(enemy, base.Owner, ICombatState.HittableEnemies, 1m);
                 }
             }
 
@@ -42,7 +42,7 @@ public class HeavenlyFallBuffPower : CustomPowerModel
             await PowerCmd.TickDownDuration(this);
         }
     }
-    public override async Task BeforeHandDraw(Player player, PlayerChoiceContext choiceContext, CombatState combatState)
+    public override async Task BeforeHandDraw(Player player, PlayerChoiceContext choiceContext, ICombatState ICombatState)
     {
         if (player == base.Owner.Player)
         {

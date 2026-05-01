@@ -57,7 +57,7 @@ public sealed class SwirlingStorm : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：费用 2 -> 1
-        base.EnergyCost.UpgradeBy(-1);
+        base.DynamicVars.Power<WindPower>().UpgradeValueBy(1m);
+        base.DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

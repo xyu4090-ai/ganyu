@@ -12,19 +12,19 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class Efficiency : GanyuCardModel
 {
-    public Efficiency() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self, true)
+    public Efficiency() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self, true)
     {
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
         // 升级效果：抽 1 张牌 -> 抽 2 张牌
-        new CardsVar(1)
+        new CardsVar(2)
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // 赋予玩家能力，层数决定每次反应抽几张
-        await PowerCmd.Apply<EfficiencyPower>(
+        await PowerCmd.Apply<EfficiencyPower>(choiceContext,
             base.Owner.Creature, 
             base.DynamicVars.Cards.BaseValue, 
             base.Owner.Creature, 
@@ -33,6 +33,6 @@ public sealed class Efficiency : GanyuCardModel
     }
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Cards.UpgradeValueBy(1m);
+        base.EnergyCost.UpgradeBy(-1);
     }
 }

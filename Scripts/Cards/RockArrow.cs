@@ -38,7 +38,7 @@ public class RockArrow : GanyuCardModel
             .Execute(choiceContext);
         await ActionWithContext(choiceContext, async () =>
         {
-            await GanyuElementUtils.ApplyRockReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies);
+            await GanyuElementUtils.ApplyRockReaction(cardPlay.Target, base.Owner.Creature,base.CombatState.HittableEnemies,base.DynamicVars.Power<RockPower>().BaseValue);
         });
     }
     protected override void OnUpgrade()

@@ -13,7 +13,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class PrismaticArray : GanyuCardModel
 {
-    public PrismaticArray() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy, true)
+    public PrismaticArray() : base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy, true)
     {
     }
 
@@ -21,7 +21,7 @@ public sealed class PrismaticArray : GanyuCardModel
         // 基础伤害 3 点
         new DamageVar(3m, ValueProp.Move),
         // 命中次数 3 次 (参考 Ricochet 使用 RepeatVar)
-        new RepeatVar(3)
+        new RepeatVar(5)
     ];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [

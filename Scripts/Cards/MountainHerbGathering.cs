@@ -53,7 +53,7 @@ public sealed class MountainHerbGathering : GanyuCardModel
 
             // 加入抽牌堆，并伴随 UI 预览动画
             CardCmd.PreviewCardPileAdd(
-                await CardPileCmd.AddGeneratedCardsToCombat(list, PileType.Draw, addedByPlayer: true, CardPilePosition.Random)
+                await CardPileCmd.AddGeneratedCardsToCombat(list, PileType.Draw, base.Owner, CardPilePosition.Random)
             );
         }
     }

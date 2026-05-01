@@ -20,7 +20,7 @@ public class BalefulOmenPower : CustomPowerModel
     public override string? CustomBigIconPath => "res://Ganyu/images/powers/baleful_omen.png";
 
     // 在抽牌前（即回合开始时）触发
-    public override async Task BeforeHandDraw(Player player, PlayerChoiceContext choiceContext, CombatState combatState)
+    public override async Task BeforeHandDraw(Player player, PlayerChoiceContext choiceContext, ICombatState combatState)
     {
         if (player == base.Owner.Player)
         {

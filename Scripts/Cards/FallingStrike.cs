@@ -15,7 +15,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public class FallingStrike : GanyuCardModel
 {
-    private const int energyCost = 1;
+    private const int energyCost = 2;
     private const CardType type = CardType.Attack;
     private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.AllEnemies;
@@ -23,7 +23,7 @@ public class FallingStrike : GanyuCardModel
     public FallingStrike() : base(energyCost, type, rarity, targetType, true) { }
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new DamageVar(9m, ValueProp.Move), 
+        new DamageVar(12m, ValueProp.Move), 
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -37,6 +37,6 @@ public class FallingStrike : GanyuCardModel
     }
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Damage.UpgradeValueBy(2m);
+        base.DynamicVars.Damage.UpgradeValueBy(4m);
     }
 }

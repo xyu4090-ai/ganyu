@@ -20,12 +20,12 @@ public class GuobaAttackPower : CustomPowerModel
     public override string? CustomBigIconPath => "res://Ganyu/images/powers/guoba_attack.png";
 
     // 仿照降众天华，在抽牌前（即回合开始时）结算伤害以确保拥有 PlayerChoiceContext
-    public override async Task BeforeHandDraw(Player player, PlayerChoiceContext choiceContext, CombatState combatState)
+    public override async Task BeforeHandDraw(Player player, PlayerChoiceContext choiceContext, ICombatState ICombatState)
     {
         if (player == base.Owner.Player)
         {
             Flash();
-            var aliveEnemies = combatState.HittableEnemies.Where(e => e.IsAlive).ToList();
+            var aliveEnemies = ICombatState.HittableEnemies.Where(e => e.IsAlive).ToList();
             if (aliveEnemies.Count > 0)
             {
                 // 随机选择一名存活的敌人
@@ -39,7 +39,7 @@ public class GuobaAttackPower : CustomPowerModel
                     if (target.IsAlive)
                     {
                         await GanyuElementUtils.ExecuteReaction(choiceContext, async () => {
-                            await GanyuElementUtils.ApplyFireReaction(target, base.Owner, combatState.HittableEnemies, 1m);
+                            await GanyuElementUtils.ApplyFireReaction(target, base.Owner, ICombatState.HittableEnemies, 1m);
                         });
                     }
                 }

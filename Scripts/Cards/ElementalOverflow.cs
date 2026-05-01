@@ -22,7 +22,7 @@ public sealed class ElementalOverflow : GanyuCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // 赋予玩家“元素溢出”能力
-        await PowerCmd.Apply<ElementalOverflowPower>(
+        await PowerCmd.Apply<ElementalOverflowPower>(choiceContext,
             base.Owner.Creature, 
             1m, 
             base.Owner.Creature, 

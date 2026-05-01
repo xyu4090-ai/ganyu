@@ -14,7 +14,7 @@ namespace Ganyu.Scripts.Cards;
 public sealed class GeoMastery : GanyuCardModel
 {
     // 费用为1，类型为能力牌，稀有度设为罕见（Uncommon）
-    public GeoMastery() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
+    public GeoMastery() : base(1, CardType.Power, CardRarity.Rare, TargetType.Self, true)
     {
     }
 
@@ -26,10 +26,10 @@ public sealed class GeoMastery : GanyuCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // 赋予玩家“岩元素精通”能力
-        await PowerCmd.Apply<GeoMasteryPower>(
-            base.Owner.Creature, 
-            base.DynamicVars.Power<GeoMasteryPower>().BaseValue, 
-            base.Owner.Creature, 
+        await PowerCmd.Apply<GeoMasteryPower>(choiceContext,
+            base.Owner.Creature,
+            base.DynamicVars.Power<GeoMasteryPower>().BaseValue,
+            base.Owner.Creature,
             this
         );
     }
@@ -37,6 +37,6 @@ public sealed class GeoMastery : GanyuCardModel
     protected override void OnUpgrade()
     {
         // 升级效果：赋予“固有”属性
-        AddKeyword(CardKeyword.Innate);
+        base.EnergyCost.UpgradeBy(-1);
     }
 }

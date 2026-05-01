@@ -23,7 +23,7 @@ public sealed class Thunderclap : GanyuCardModel
         // 给予 1 层雷元素
         new PowerVar<ElectroPower>(1m),
         // 初始抽 1 张牌
-        new CardsVar(1)
+        new CardsVar(2)
     ];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [
@@ -57,7 +57,6 @@ public sealed class Thunderclap : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：抽牌量 1 -> 2 (+1)
-        base.DynamicVars.Cards.UpgradeValueBy(1m);
+        base.DynamicVars.Power<ElectroPower>().UpgradeValueBy(1m);
     }
 }

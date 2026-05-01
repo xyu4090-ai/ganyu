@@ -27,7 +27,7 @@ public sealed class ChainReaction : GanyuCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // 给予玩家“连锁反应”能力
-        await PowerCmd.Apply<ChainReactionPower>(base.Owner.Creature, 1m, base.Owner.Creature, this);
+        await PowerCmd.Apply<ChainReactionPower>(choiceContext,base.Owner.Creature, 1m, base.Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
