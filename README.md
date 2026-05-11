@@ -1,202 +1,202 @@
-# Ganyu Mod - Slay the Spire 2
+# 甘雨 Mod - 杀戮尖塔 2
 
 > *一个在璃月工作上千年的存在。时间对甘雨而言，不过是另一种形式的永恒。*
 
-A full character mod for Slay the Spire 2, featuring **Ganyu** from Genshin Impact. Implements a complete **elemental reaction system** inspired by Genshin Impact's combat mechanics, with 90 cards, 62 powers, relics, and rich NPC dialogue.
+一个完整的《杀戮尖塔 2》角色 Mod，以《原神》中的**甘雨**为主角。实现了完整的**元素反应系统**，灵感来源于《原神》的战斗机制，包含 90 张卡牌、62 个能力、遗物以及丰富的 NPC 对话。
 
 ---
 
-## Core Mechanics
+## 核心机制
 
-### Element System
+### 元素系统
 
-Six elements can be applied to enemies as layered debuffs:
+六种元素可以作为叠加减益施加在敌人身上：
 
-| Element | Chinese | Arrow Card | Color |
-|---------|---------|------------|-------|
-| Ice | 冰元素 | Ice Arrow | Cryo |
-| Water | 水元素 | Water Arrow | Hydro |
-| Fire | 火元素 | Fire Arrow | Pyro |
-| Electro | 雷元素 | Electro Arrow | Electro |
-| Rock | 岩元素 | Rock Arrow | Geo |
-| Wind | 风元素 | Wind Arrow | Anemo |
+| 元素 | 箭矢卡牌 | 颜色 |
+|------|----------|------|
+| 冰元素 | 冰箭 | 冰 |
+| 水元素 | 水箭 | 水 |
+| 火元素 | 火箭 | 火 |
+| 雷元素 | 雷箭 | 雷 |
+| 岩元素 | 岩箭 | 岩 |
+| 风元素 | 风箭 | 风 |
 
-### Elemental Reactions
+### 元素反应
 
-When Ice interacts with another element (or Wind swirls), a reaction triggers:
+当冰元素与其他元素交互（或风元素扩散）时，会触发反应：
 
-| Reaction | Chinese | Elements | Effect |
-|----------|---------|----------|--------|
-| **Melt** | 融化 | Ice + Fire | 8 damage per layer consumed |
-| **Freeze** | 结冰 | Ice + Water | Target deals 40% less attack damage |
-| **Superconduct** | 超导 | Ice + Electro | Target takes 40% more attack damage |
-| **Crystallize** | 结晶 | Ice + Rock | Gain 4 block per layer consumed |
-| **Swirl** | 扩散 | Wind + any | Spread the swirled element to all enemies |
-| **Ignition** | 炎化 | Fire special | Target takes 200% more damage |
-| **Petrification** | 岩化 | Rock special | Target grants block to source when damaged |
+| 反应 | 元素组合 | 效果 |
+|------|----------|------|
+| **融化** | 冰 + 火 | 每层消耗造成 8 点伤害 |
+| **结冰** | 冰 + 水 | 目标攻击伤害降低 40% |
+| **超导** | 冰 + 雷 | 目标受到的攻击伤害增加 40% |
+| **结晶** | 冰 + 岩 | 每层消耗获得 4 点格挡 |
+| **扩散** | 风 + 任意 | 将被扩散的元素传播给所有敌人 |
+| **炎化** | 火特殊 | 目标受到的伤害增加 200% |
+| **岩化** | 岩特殊 | 目标受伤时为来源提供格挡 |
 
-### Elemental Charge System
+### 元素充能系统
 
-Applying elements also charges Ganyu's own elemental energy. Each element has a **dual-milestone charge** system:
+施加元素也会为甘雨自身的元素能量充能。每种元素都有**双阶段充能**系统：
 
-- **5 layers** -> Gain a mid-tier power (e.g., Traces of Qilin, Guoba Attack)
-- **10 layers** -> Gain a powerful ultimate (e.g., Heavenly Fall, Pyronado), then reset
+- **5 层** -> 获得中阶能力（如山泽麟迹、锅巴出击）
+- **10 层** -> 获得强力终结技（如降众天华、旋火轮），然后重置
 
-| Element | Tier 1 (5) | Tier 2 (10) |
-|---------|------------|-------------|
-| Ice | Traces of Qilin (3 block/turn) | Heavenly Fall (15 AoE + Ice + energy/turn) |
-| Water | Oath of Silvery Moon (heal + Water AoE) | Oceanborne Feather (Freeze enhancement) |
-| Fire | Guoba Attack (7 damage + Fire/turn) | Pyronado (10 AoE + Fire/turn) |
-| Electro | Baleful Omen (energy + 7 damage + Electro/turn) | Musou Shinsetsu (consumes Electro for massive AoE) |
-| Rock | Jade Shield (double Crystallize block) | Starfall (block + 25 AoE at turn end) |
-| Wind | Wind Spirit 6308 (4 AoE + Wind/turn) | Forbidden Wind Spirit 75 (10 AoE + Wind/turn) |
-
----
-
-## Card Library (90 cards)
-
-### Basic Cards
-- **Strike** / **Defend** - Standard starter cards
-
-### Elemental Arrows (6)
-Deal damage and apply corresponding element. The core of most builds.
-
-### Element Mastery Cards (6)
-- Ice / Hydro / Electro / Geo / Pyro / Anemo Mastery - Grant extra layers when gaining the corresponding charge
-
-### Reaction Synergy Cards (15+)
-- **Frostflake Arrow** - If target has Ice, splash damage to all enemies
-- **Shatter Bolt** - Extra damage if target is Frozen
-- **Crystal Burst** - Block equal to target's Rock layers x multiplier
-- **Explosive Arrow** - Doubled damage if Frozen; Fire to all enemies
-- **Fusion Strike** - Extra damage per elemental reaction this turn
-- **Elemental Symphony** - Extra hit per different element on target
-- **Absolute Zero Execution** - Double damage if Frozen
-- **Rock Smash** - Force-trigger Crystallize X times
-- **Glacier Smash** - Double damage + energy if Frozen
-
-### AoE / Spread Cards (10+)
-- **Cryo Cannon** - Damage all enemies + Ice
-- **Falling Strike** - Damage all enemies
-- **Ice Age** - Apply Ice to all enemies
-- **Swirling Storm** - Wind to all enemies + draw
-- **Thunderclap** - Electro to all enemies + draw
-- **Abyssal Torrent** - Damage + Water to all enemies
-- **Rock Bulwark** - Block + Rock to all enemies
-
-### Resource Engine Cards (10+)
-- **Unending Revenue** - Each reaction grants energy
-- **Efficiency** - Each reaction draws cards
-- **Administrative Streamlining** - Each reaction draws 1 card
-- **Overtime Work** - Lose 2 HP, gain 1 energy + 1 draw/turn
-- **Overdrawn Potential** - Draw cards + energy, lose 2 HP/turn
-- **Chain Reaction** - Each reaction applies Ice to random enemy
-- **Elemental Overflow** - All reactions double their output
-
-### Utility / Special Cards
-- **Elemental Resonance** - Copy elements from one enemy to all others
-- **Elemental Torrent** - Exhaust; double all element layers on all enemies
-- **Ultimate Extraction** - Exhaust; remove ALL elements, deal damage per layer
-- **Blessing of the Seven** - Consume Status/Curse cards for random charges
-- **Mountain Herb Gathering** - Add healing Qingxin cards to draw pile
-- **Elemental Pull** - Recover a discard card at 0 cost
+| 元素 | 阶段一 (5层) | 阶段二 (10层) |
+|------|-------------|---------------|
+| 冰 | 山泽麟迹（每回合 3 格挡） | 降众天华（15 点全体伤害 + 冰 + 每回合充能） |
+| 水 | 海月之誓（治疗 + 水元素全体） | 海人化羽（结冰强化） |
+| 火 | 锅巴出击（7 点伤害 + 每回合火） | 旋火轮（10 点全体伤害 + 每回合火） |
+| 雷 | 神变·恶曜开眼（充能 + 7 点伤害 + 每回合雷） | 奥义·梦想真说（消耗雷造成大量全体伤害） |
+| 岩 | 玉璋护盾（结晶格挡翻倍） | 天星（格挡 + 回合结束 25 点全体伤害） |
+| 风 | 风灵作成·陆叁零捌（4 点全体伤害 + 每回合风） | 禁·风灵作成·柒伍同构贰型（10 点全体伤害 + 每回合风） |
 
 ---
 
-## Power System (62 powers)
+## 卡牌库（90 张）
 
-### Passive Build-Around Powers
-| Power | Effect |
-|-------|--------|
-| Unending Revenue | +1 energy per reaction |
-| Administrative Streamlining | +1 draw per reaction |
-| Chain Reaction | Each reaction applies Ice to random enemy |
-| Elemental Overflow | Double reaction layer output |
-| Overload Prep | Next N reactions double their effect |
-| Ride the Wind | Each Swirl makes a random card cost 0 |
-| Solid as Rock | Crystallize retains block this turn |
-| Elemental Symbiosis | Gain block when gaining non-Ice charge |
-| Peaks of Guyun | Gain block when enemies receive Rock |
-| Blooming Blazeflower | Applying Fire deals damage to all enemies |
-| Leyline Tremor | Applying Rock deals damage to all enemies |
-| Thunderstorm Matrix | Turn end: Electro layers x 3 damage to all |
+### 基础卡牌
+- **打击** / **防御** - 标准初始卡牌
 
-### Offense/Defense Powers
-- **Ignition** - Target takes 200% more damage
-- **Freeze** - Target deals 40% less damage
-- **Superconduct** - Target takes 40% more attack damage
-- **Oceanborne Feather** - Enhances Freeze damage reduction by +50%
-- **Dew Nectar** - Attacks deal 15% more damage
+### 元素箭矢（6 张）
+造成伤害并施加对应元素。大多数构筑的核心。
 
----
+### 元素精通卡牌（6 张）
+- 冰元素精通 / 水元素精通 / 雷元素精通 / 岩元素精通 / 火元素精通 / 风元素精通 - 获得对应充能时额外增加层数
 
-## Relics
+### 反应协同卡牌（15+ 张）
+- **霜华矢** - 若目标有冰元素，对全体敌人造成溅射伤害
+- **碎冰击** - 目标结冰时额外伤害
+- **结晶迸发** - 格挡等于目标岩元素层数 × 倍率
+- **爆燃之矢** - 结冰时伤害翻倍；对全体敌人施加火元素
+- **聚变打击** - 本回合每次元素反应额外伤害
+- **元素交响曲** - 目标每有一种不同元素额外命中一次
+- **极寒处刑** - 结冰时伤害翻倍
+- **碎岩击** - 强制触发结晶 X 次
+- **冰河破碎** - 结冰时伤害翻倍 + 充能
 
-| Relic | Effect |
-|-------|--------|
-| **Heavenly Fall** (降众天华) | Battle start: apply Ice to all enemies. Periodically: gain energy + Dew Nectar |
-| **Heavenly Fall UP** | Enhanced version of the above |
+### 全体/扩散卡牌（10+ 张）
+- **冰系大炮** - 对全体敌人造成伤害 + 冰元素
+- **下落攻击** - 对全体敌人造成伤害
+- **大冰河期** - 对全体敌人施加冰元素
+- **扩散风暴** - 对全体敌人施加风元素 + 抽牌
+- **鸣雷破** - 对全体敌人施加雷元素 + 抽牌
+- **深渊激流** - 伤害 + 对全体敌人施加水元素
+- **岩阵壁垒** - 格挡 + 对全体敌人施加岩元素
 
----
+### 资源引擎卡牌（10+ 张）
+- **不竭岁收** - 每次反应获得充能
+- **高效办公** - 每次反应抽牌
+- **政务精简** - 每次反应抽 1 张牌
+- **加班加班！** - 失去 2 生命值，每回合获得 1 充能 + 1 抽牌
+- **透支潜力** - 抽牌 + 充能，每回合失去 2 生命值
+- **连锁反应** - 每次反应对随机敌人施加冰元素
+- **元素溢出** - 所有反应输出翻倍
 
-## Patches & Integrations
-
-The mod patches the following base game systems:
-- **Audio Helper** - Custom Ganyu sound effects
-- **Character Select Background** - Custom selection screen
-- **Card Trail VFX** - Custom particle effects for card plays
-- **Archaic Tooth / Touch of Orobas** - Relic interaction patches
-
----
-
-## NPC Dialogue
-
-9 unique NPC conversation trees with thematic writing centered on Ganyu's character concept of **"waiting"** (等待). After a thousand years of service in Liyue, Ganyu's dialogue reflects patience, eternity, and existential longing.
-
-Notable NPCs: Neow, Darv, Tanx, Vakuu, The Architect (final boss).
+### 功能/特殊卡牌
+- **元素共鸣** - 选择一名敌人，其每带有一种非冰/风的元素，获得对应元素层数的充能
+- **元素洪流** - 消耗；所有敌人的所有元素层数翻倍
+- **终极萃取** - 消耗；移除所有元素，每层造成伤害
+- **七天神像的赐福** - 消耗状态/诅咒卡牌获得随机充能
+- **寻山采药** - 将治疗用清心牌加入抽牌堆
+- **元素牵引** - 从弃牌堆取回一张牌，费用为 0
 
 ---
 
-## Project Structure
+## 能力系统（62 个）
+
+### 被动构筑能力
+| 能力 | 效果 |
+|------|------|
+| 不竭岁收 | 每次反应 +1 充能 |
+| 政务精简 | 每次反应 +1 抽牌 |
+| 连锁反应 | 每次反应对随机敌人施加冰元素 |
+| 元素溢出 | 反应层数输出翻倍 |
+| 反应预载 | 接下来 N 次反应效果翻倍 |
+| 顺风而行 | 每次扩散使随机卡牌费用变为 0 |
+| 坚如磐石 | 结晶在本回合保留格挡 |
+| 元素共生 | 获得非冰元素充能时获得格挡 |
+| 孤云峰岩 | 敌人获得岩元素时获得格挡 |
+| 烈焰绽放 | 施加火元素时对所有敌人造成伤害 |
+| 地脉震颤 | 施加岩元素时对所有敌人造成伤害 |
+| 雷暴矩阵 | 回合结束：雷元素层数 × 3 对全体造成伤害 |
+
+### 攻防能力
+- **炎化** - 目标受到的伤害增加 200%
+- **结冰** - 目标造成的伤害降低 40%
+- **超导** - 目标受到的攻击伤害增加 40%
+- **海人化羽** - 结冰伤害减免额外 +50%
+- **饮露** - 攻击牌提高 15% 伤害
+
+---
+
+## 遗物
+
+| 遗物 | 效果 |
+|------|------|
+| **降众天华** | 战斗开始：对所有敌人施加冰元素。定期：获得充能 + 饮露状态 |
+| **降众天华UP** | 强化版 |
+
+---
+
+## 补丁与集成
+
+本 Mod 对以下游戏底层系统进行了补丁修改：
+- **音频助手** - 自定义甘雨音效
+- **角色选择背景** - 自定义选择界面
+- **卡牌拖尾特效** - 自定义卡牌打出粒子效果
+- **古岩龙蜥 / 奥罗巴斯之触** - 遗物交互补丁
+
+---
+
+## NPC 对话
+
+9 个独特的 NPC 对话树，围绕甘雨**"等待"**的角色主题进行创作。在璃月服务千年之后，甘雨的对话体现了耐心、永恒与存在的渴望。
+
+主要 NPC：Neow、Darv、Tanx、Vakuu、The Architect（最终 Boss）。
+
+---
+
+## 项目结构
 
 ```
 GanyuMod/
 ├── Scripts/
-│   ├── Entry.cs              # Mod entry point
-│   ├── GanyuCharacter.cs     # Character definition
-│   ├── GanyuCardPool.cs      # Card pool registration
-│   ├── GanyuRelicPool.cs     # Relic pool registration
-│   ├── GanyuPotionPool.cs    # Potion pool registration
-│   ├── Cards/                # 90 card implementations
-│   ├── Powers/               # 62 power implementations
-│   ├── Relics/               # 3 relic implementations
-│   ├── Patches/              # Game system patches
-│   ├── Nodes/                # VFX & custom nodes
+│   ├── Entry.cs              # Mod 入口点
+│   ├── GanyuCharacter.cs     # 角色定义
+│   ├── GanyuCardPool.cs      # 卡牌池注册
+│   ├── GanyuRelicPool.cs     # 遗物池注册
+│   ├── GanyuPotionPool.cs    # 药水池注册
+│   ├── Cards/                # 90 张卡牌实现
+│   ├── Powers/               # 62 个能力实现
+│   ├── Relics/               # 3 个遗物实现
+│   ├── Patches/              # 游戏系统补丁
+│   ├── Nodes/                # 特效与自定义节点
 │   └── Utils/
-│       └── GanyuElementUtils.cs  # Core element reaction engine (691 lines)
+│       └── GanyuElementUtils.cs  # 核心元素反应引擎（691 行）
 └── Ganyu/
-    ├── localization/zhs/     # Chinese localization (cards, powers, relics, NPCs)
-    ├── scenes/               # Character scenes & VFX
-    ├── images/               # Card art, power icons, UI assets
-    └── themes/               # Visual themes
+    ├── localization/zhs/     # 中文本地化（卡牌、能力、遗物、NPC）
+    ├── scenes/               # 角色场景与特效
+    ├── images/               # 卡面、能力图标、UI 素材
+    └── themes/               # 视觉主题
 ```
 
 ---
 
-## Tech Stack
+## 技术栈
 
-- **Engine**: Godot (via Slay the Spire 2 modding framework)
-- **Language**: C#
-- **Asset Pipeline**: Godot `.tscn` scenes, `.png` sprites, `.wav` audio
+- **引擎**：Godot（通过杀戮尖塔 2 框架）
+- **语言**：C#
+- **资源管线**：Godot `.tscn` 场景、`.png` 精灵图、`.wav` 音频
 
 ---
 
-## Localization
+## 本地化
 
-All content is fully localized in Chinese (Simplified). Localization files:
+所有内容已完全本地化为简体中文。本地化文件：
 
-- `cards.json` - 90 card names and descriptions
-- `powers.json` - 62 power names and descriptions
-- `relics.json` - Relic names and descriptions
-- `characters.json` - Character profile and dialogue
-- `ancients.json` - NPC dialogue trees (98 entries across 9 NPCs)
+- `cards.json` - 90 张卡牌的名称和描述
+- `powers.json` - 62 个能力的名称和描述
+- `relics.json` - 遗物的名称和描述
+- `characters.json` - 角色档案和对话
+- `ancients.json` - NPC 对话树（9 个 NPC 共 98 条对话）
