@@ -11,7 +11,7 @@ internal static class GanyuCharSelectBgPatch
         // 检查当前选择的角色是否是 Ganyu
         if (characterModel is GanyuCharacter)
         {
-            NovaAudioHelper.PlayOneShot("res://Ganyu/audios/select_bgm.wav", 1.0f);
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/select_bgm.wav", 1.0f);
         }
     }
 }

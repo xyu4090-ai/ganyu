@@ -23,7 +23,7 @@ public class MusouShinsetsuPower : CustomPowerModel
             Flash();
             
             decimal totalElectroRemoved = 0;
-            
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/leishen_10.mp3");
             // 移除所有敌人的雷元素并计算总层数
             foreach (var enemy in ICombatState.HittableEnemies)
             {
@@ -38,7 +38,6 @@ public class MusouShinsetsuPower : CustomPowerModel
                     }
                 }
             }
-
             // 计算最终伤害：15 + (每移除1层额外5点)
             decimal finalDamage = 25m + (5m * totalElectroRemoved);
             

@@ -27,7 +27,7 @@ public class HeavenlyFallBuffPower : CustomPowerModel
             Flash();
             // 1. 获得 1 点能量
             await PlayerCmd.GainEnergy(1, base.Owner.Player);
-
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/ganyu_10.mp3");
             // 3. 全体 1 层冰元素
             // 这里调用工具类触发反应检查
             foreach (var enemy in ICombatState.HittableEnemies)

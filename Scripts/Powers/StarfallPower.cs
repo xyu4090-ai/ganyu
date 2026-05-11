@@ -32,6 +32,7 @@ public class StarfallPower : CustomPowerModel
         if (side == base.Owner.Side)
         {
             Flash();
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/zhongli_10.mp3");
             SetDamage(base.Owner.Block);
             // 对全体敌人造成 25 点伤害
             await CreatureCmd.Damage(choiceContext, base.CombatState.HittableEnemies, base.DynamicVars.Damage.BaseValue, ValueProp.Unpowered, base.Owner, null);

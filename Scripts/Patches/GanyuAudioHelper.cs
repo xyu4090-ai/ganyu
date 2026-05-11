@@ -1,6 +1,6 @@
 using Godot;
 
-public static class NovaAudioHelper
+public static class GanyuAudioHelper
 {    // 用于加载和播放本地音频文件
     private static AudioStreamPlayer? _player;
 

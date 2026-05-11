@@ -23,7 +23,6 @@ public sealed class BlessingOfTheSeven : GanyuCardModel
     protected override IEnumerable<DynamicVar> CanonicalVars => [
         new DynamicVar("charge",2m)
     ];
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

@@ -491,7 +491,10 @@ public static class GanyuElementUtils
             await PowerCmd.Apply<HeavenlyFallBuffPower>(CurrentContext, source, num10s * 2m, source, null);
 
         if (num5s > 0)
+        {
             await PowerCmd.Apply<TracesQilinPower>(CurrentContext, source, num5s * 3m, source, null);
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/ganyu_5.mp3");
+        }
 
         // 4. 更新充能层数
         decimal remainder = total % 10m;
@@ -526,11 +529,17 @@ public static class GanyuElementUtils
 
         // 达到10层：给予 1 层海人化羽
         if (num10s > 0)
+        {
             await PowerCmd.Apply<OceanborneFeatherPower>(CurrentContext, source, num10s * 1m, source, null);
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/xinhai_10.mp3");
+        }
 
         // 达到5层：给予 2 层海月之誓
         if (num5s > 0)
+        {
             await PowerCmd.Apply<OathSilveryMoonPower>(CurrentContext, source, num5s * 2m, source, null);
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/xinhai_5.mp3");
+        }
 
         // 更新充能层数 (满10清零并保留余数)
         decimal remainder = total % 10m;
@@ -564,12 +573,18 @@ public static class GanyuElementUtils
 
         // 达到10层：给予 2 层旋火轮
         if (num10s > 0)
+        {
             await PowerCmd.Apply<PyronadoPower>(CurrentContext, source, num10s * 2m, source, null);
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/xiangling_10.mp3");
+        }
 
         // 达到5层：给予 2 层锅巴出击
         if (num5s > 0)
+        {
             await PowerCmd.Apply<GuobaAttackPower>(CurrentContext, source, num5s * 2m, source, null);
-
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/xiangling_5.mp3");
+        }
+        
         // 更新充能层数 (满10清零并保留余数)
         decimal remainder = total % 10m;
         var existingPower = source.GetPower<FireChargePower>();
@@ -602,11 +617,17 @@ public static class GanyuElementUtils
 
         // 达到10层：给予 1 层奥义·梦想真说
         if (num10s > 0)
+        {
             await PowerCmd.Apply<MusouShinsetsuPower>(CurrentContext, source, num10s * 1m, source, null);
+        }
+
 
         // 达到5层：给予 2 层神变·恶曜开眼
         if (num5s > 0)
+        {
             await PowerCmd.Apply<BalefulOmenPower>(CurrentContext, source, num5s * 2m, source, null);
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/leishen_5.mp3");
+        }
 
         // 更新充能层数 (满10清零并保留余数)
         decimal remainder = total % 10m;
@@ -643,7 +664,11 @@ public static class GanyuElementUtils
 
         // 达到5层：给予 2 层玉璋护盾
         if (num5s > 0)
+        {
             await PowerCmd.Apply<JadeShieldPower>(CurrentContext, source, num5s * 2m, source, null);
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/zhongli_5.mp3");
+        }
+
 
         decimal remainder = total % 10m;
         var existingPower = source.GetPower<RockChargePower>();
@@ -675,11 +700,18 @@ public static class GanyuElementUtils
 
         // 达到10层：给予 3 层禁·风灵作成·柒伍同构贰型
         if (num10s > 0)
+        {
             await PowerCmd.Apply<ForbiddenWindSpirit75Power>(CurrentContext, source, num10s * 3m, source, null);
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/shatang_10.mp3");
+        }
+        
 
         // 达到5层：给予 1 层风灵作成·陆叁零捌
         if (num5s > 0)
+        {
             await PowerCmd.Apply<WindSpirit6308Power>(CurrentContext, source, num5s * 1m, source, null);
+            GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/shatang_5.mp3");
+        }
 
         decimal remainder = total % 10m;
         var existingPower = source.GetPower<WindChargePower>();

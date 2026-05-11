@@ -62,7 +62,7 @@
     "GANYU-SWIRLING_STORM.title": "扩散风暴",
     "GANYU-SWIRLING_STORM.description": "给予全体敌人{WindPower:diff()}层[gold]风元素[/gold]并抽{Cards:diff()}张牌。",
     "GANYU-RESONANCE.title": "元素共鸣",
-    "GANYU-RESONANCE.description": "将目标身上 {MagicNumber:diff()} 种随机[gold]元素[/gold]复制给所有其他敌人。",
+    "GANYU-RESONANCE.description": "获得{Block:diff()}点[gold]格挡[/gold]。\n选择一名敌人，其每带有一种非冰/风的[gold]元素[/gold]，获得对应元素层数的[gold]充能[/gold]。\n对其施加 1 层[gold]冰元素[/gold]。",
     "GANYU-CHAIN_REACTION.title": "连锁反应",
     "GANYU-CHAIN_REACTION.description": "每当你触发一次元素反应，随机给予一名敌人 {IcePower} 层[gold]冰元素[/gold]。",
     "GANYU-ELEMENTAL_OVERFLOW.title": "元素溢出",

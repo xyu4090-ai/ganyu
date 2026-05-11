@@ -25,11 +25,11 @@ public sealed class CrossStrike : GanyuCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
         new DamageVar(5m, ValueProp.Move), // 基础伤害 7
-        new PowerVar<IcePower>(2m)        // 1 层风元素
+        new PowerVar<IcePower>(2m)        // 1 层冰元素
     ];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [
-        HoverTipFactory.FromPower<WindPower>()
+        HoverTipFactory.FromPower<IcePower>()
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -51,16 +51,16 @@ public sealed class CrossStrike : GanyuCardModel
                 cardPlay.Target.GetPower<RockPower>() != null ||
                 cardPlay.Target.GetPower<WindPower>() != null;
 
-            // 如果有附着，则给予 1 层风元素引发扩散
+            // 如果有附着，则给予 1 层冰元素引发扩散
             if (hasAnyElement)
             {
                 await ActionWithContext(choiceContext, async () =>
                 {
-                    await GanyuElementUtils.ApplyWindReaction(
+                    await GanyuElementUtils.ApplyIceReaction(
                         cardPlay.Target, 
                         base.Owner.Creature, 
                         base.CombatState.HittableEnemies,
-                        base.DynamicVars.Power<WindPower>().BaseValue
+                        base.DynamicVars.Power<IcePower>().BaseValue
                     );
                 });
             }
