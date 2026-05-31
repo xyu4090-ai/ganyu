@@ -149,7 +149,7 @@
 	"GANYU-BLAZING_IMPACT.title": "炽热冲击",
 	"GANYU-BLAZING_IMPACT.description": "造成 {Damage:diff()} 点伤害。\n给予目标 {FlamePower} 层[gold]火元素[/gold]。",
 	"GANYU-IGNITE_FLAME.title": "点燃烈焰",
-	"GANYU-IGNITE_FLAME.description": "给予全体敌人 1 层[gold]火元素[/gold]。\n抽 1 张牌。",
+	"GANYU-IGNITE_FLAME.description": "给予全体敌人 1 层[gold]火元素[/gold]。\n抽 {Cards:diff()} 张牌。",
 	"GANYU-SCORCHED_EARTH_TACTICS.title": "焦土战术",
 	"GANYU-SCORCHED_EARTH_TACTICS.description": "获得 {Block:diff()} 点[gold]格挡[/gold]。\n选择手牌中的 1 张牌消耗。如果消耗的是攻击牌，随机给予一名敌人 {FlamePower} 层[gold]火元素[/gold]。",
 	"GANYU-EXPLOSIVE_ARROW.title": "爆燃之矢",

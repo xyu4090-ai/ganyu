@@ -21,7 +21,11 @@ public sealed class ElementArrow : GanyuCardModel
     }
         protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
+        HoverTipFactory.FromCard<WaterArrow>(),
         HoverTipFactory.FromCard<FireArrow>(),
+        HoverTipFactory.FromCard<WindArrow>(),
+        HoverTipFactory.FromCard<ElectroArrow>(),
+        HoverTipFactory.FromCard<RockArrow>(),
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
