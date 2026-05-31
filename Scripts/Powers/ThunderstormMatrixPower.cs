@@ -21,7 +21,7 @@ public class ThunderstormMatrixPower : CustomPowerModel
     public override string? CustomBigIconPath => "res://Ganyu/images/powers/thunderstorm_matrix.png";
 
     // 回合结束时触发
-    public override async Task AfterSideTurnStart(CombatSide side, ICombatState ICombatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants,ICombatState ICombatState)
     {
         if (side != base.Owner.Side)
         {

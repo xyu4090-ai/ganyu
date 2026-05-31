@@ -31,31 +31,26 @@ public sealed class PrismaticArray : GanyuCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // 获取循环次数
         int count = base.DynamicVars.Repeat.IntValue;
 
-        // 循环执行攻击，以确保每一击都能正确处理元素反应的先后顺序
+        // 使用 WithHitCount 确保每段伤害都正确应用活力等加成（参考元素交响曲）
+        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue)
+            .WithHitCount(count)
+            .FromCard(this)
+            .Targeting(cardPlay.Target)
+            .Execute(choiceContext);
+
+        // 每段命中后给予 1 层冰元素并尝试反应
         for (int i = 0; i < count; i++)
         {
-            // 如果目标已经死亡，停止后续攻击
-            if (cardPlay.Target == null || !cardPlay.Target.IsAlive)
-            {
-                break;
-            }
+            if (cardPlay.Target == null || !cardPlay.Target.IsAlive) break;
 
-            // 1. 执行单次攻击 (参考 Ricochet 的 Damage 变量与效果)
-            await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue)
-                .FromCard(this)
-                .Targeting(cardPlay.Target)
-                .Execute(choiceContext);
-
-            // 2. 命中后给予 1 层冰元素并尝试反应
             await ActionWithContext(choiceContext, async () =>
             {
                 await GanyuElementUtils.ApplyIceReaction(
-                    cardPlay.Target, 
-                    base.Owner.Creature, 
-                    base.CombatState.HittableEnemies, 
+                    cardPlay.Target,
+                    base.Owner.Creature,
+                    base.CombatState.HittableEnemies,
                     1m
                 );
             });

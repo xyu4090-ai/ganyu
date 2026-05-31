@@ -25,40 +25,43 @@ public class ExplosiveArrow : GanyuCardModel
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [
         HoverTipFactory.FromPower<FlamePower>(),
-        HoverTipFactory.FromPower<FreezingDebuffPower>()
+        HoverTipFactory.FromPower<IcePower>()
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new CalculationBaseVar(10m),    // 基础伤害 20 点
-        new ExtraDamageVar(10m),        // 触发条件时的额外伤害 20 点（用于翻倍）
-        new PowerVar<FlamePower>(2m),
-        // 动态伤害计算逻辑
+        new CalculationBaseVar(10m),
+        new ExtraDamageVar(10m),
         new CalculatedDamageVar(ValueProp.Move).WithMultiplier(static (CardModel card, Creature? target) =>
         {
-            // 如果目标存在且拥有“结冰”状态，乘数为 1 (20 + 20*1 = 40)
-            // 否则乘数为 0 (20 + 20*0 = 20)
-            if (target != null && target.GetPower<FreezingDebuffPower>() != null)
+            if (target != null && target.GetPower<IcePower>() is { } ip && ip.Amount > 0)
             {
                 return 1m;
             }
             return 0m;
-        })
+        }),
+        new PowerVar<FlamePower>(1m)
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // 1. 造成伤害
-        await DamageCmd.Attack(base.DynamicVars.CalculatedDamage)
+        await DamageCmd.Attack(DynamicVars.CalculatedDamage)
             .FromCard(this)
             .Targeting(cardPlay.Target)
             .Execute(choiceContext);
 
+        var target = cardPlay.Target;
+        if (target != null && target.IsAlive)
+        {
+            await ActionWithContext(choiceContext, async () =>
+            {
+                await GanyuElementUtils.ApplyFireReaction(target, Owner.Creature, CombatState!.HittableEnemies, DynamicVars.Power<FlamePower>().BaseValue);
+            });
+        }
     }
 
     protected override void OnUpgrade()
     {
         base.DynamicVars.CalculationBase.UpgradeValueBy(4m);
         base.DynamicVars.ExtraDamage.UpgradeValueBy(4m);
-        base.DynamicVars.Power<FlamePower>().UpgradeValueBy(1m);
     }
 }

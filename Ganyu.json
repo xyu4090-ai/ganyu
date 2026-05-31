@@ -3,7 +3,7 @@
   "name": "甘雨",
   "author": "xiaoyu",
   "description": "椰羊屠戮尖塔",
-  "version": "1.0",
+  "version": "1.1.0",
   "min_game_version": "0.105.0",
   "has_pck": true,        
   "has_dll": true,        

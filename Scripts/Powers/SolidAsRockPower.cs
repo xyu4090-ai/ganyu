@@ -34,6 +34,13 @@ public sealed class SolidAsRockPower : CustomPowerModel
         Flash();
     }
 
+    // 当岩化反应触发时调用
+    public void TriggerPetrification()
+    {
+        _retainBlockThisTurn = true;
+        Flash();
+    }
+
     // 拦截回合结束时的格挡清除逻辑
     public override bool ShouldClearBlock(Creature creature)
     {
@@ -59,7 +66,7 @@ public sealed class SolidAsRockPower : CustomPowerModel
     }
 
     // 在玩家回合开始时重置状态，确保状态干净
-    public override async Task AfterSideTurnStart(CombatSide side, ICombatState ICombatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants,ICombatState ICombatState)
     {
         if (side == CombatSide.Player)
         {

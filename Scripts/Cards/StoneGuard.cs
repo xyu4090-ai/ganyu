@@ -25,8 +25,8 @@ public sealed class StoneGuard : GanyuCardModel
     ];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [
-        // 自动关联岩元素及其“结晶”反应的说明
-        HoverTipFactory.FromPower<RockPower>()
+        HoverTipFactory.FromPower<RockPower>(),
+        HoverTipFactory.FromPower<SolidAsRockPower>()
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -34,7 +34,7 @@ public sealed class StoneGuard : GanyuCardModel
         // 1. 自身获得格挡
         await CreatureCmd.GainBlock(base.Owner.Creature, base.DynamicVars.Block, cardPlay);
 
-        // 2. 给予目标敌人岩元素并尝试触发结晶反应
+        // 3. 给予目标敌人岩元素并尝试触发结晶反应
         if (cardPlay.Target != null && cardPlay.Target.IsAlive)
         {
             await ActionWithContext(choiceContext, async () =>
@@ -51,8 +51,6 @@ public sealed class StoneGuard : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：格挡 8 -> 11 (+3)，岩元素层数 2 -> 3 (+1)
         base.DynamicVars.Block.UpgradeValueBy(3m);
-        base.DynamicVars.Power<RockPower>().UpgradeValueBy(1m);
     }
 }

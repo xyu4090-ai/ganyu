@@ -7,25 +7,23 @@ using Ganyu.Scripts.Powers;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using BaseLib.Extensions;
+using MegaCrit.Sts2.Core.Models.CardPools;
 
 namespace Ganyu.Scripts.Cards;
 
-[Pool(typeof(GanyuCardPool))]
+[Pool(typeof(TokenCardPool))]
 public sealed class GeoMastery : GanyuCardModel
 {
-    // 费用为1，类型为能力牌，稀有度设为罕见（Uncommon）
-    public GeoMastery() : base(1, CardType.Power, CardRarity.Rare, TargetType.Self, true)
+    public GeoMastery() : base(1, CardType.Power, CardRarity.Token, TargetType.Self, false)
     {
     }
 
-    // 声明能力变量，初始给予 1 层
     protected override IEnumerable<DynamicVar> CanonicalVars => [
         new PowerVar<GeoMasteryPower>(1m)
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // 赋予玩家“岩元素精通”能力
         await PowerCmd.Apply<GeoMasteryPower>(choiceContext,
             base.Owner.Creature,
             base.DynamicVars.Power<GeoMasteryPower>().BaseValue,
@@ -36,7 +34,6 @@ public sealed class GeoMastery : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：赋予“固有”属性
         base.EnergyCost.UpgradeBy(-1);
     }
 }

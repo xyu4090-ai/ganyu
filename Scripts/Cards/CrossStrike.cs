@@ -69,8 +69,6 @@ public sealed class CrossStrike : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：伤害 7 -> 10 (+3)
         base.DynamicVars.Damage.UpgradeValueBy(3m);
-        base.DynamicVars.Power<IcePower>().UpgradeValueBy(1m);
     }
 }

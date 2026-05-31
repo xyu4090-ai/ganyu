@@ -27,8 +27,8 @@ public class CryoCannon : GanyuCardModel
         HoverTipFactory.FromPower<IcePower>()
     ];
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new DamageVar(12m, ValueProp.Move), // 基础伤害 6 [cite: 482]
-        new PowerVar<IcePower>(2m)        // 冰元素标记 1 层
+        new DamageVar(18m, ValueProp.Move), // 基础伤害 6 [cite: 482]
+        new PowerVar<IcePower>(1m)        // 冰元素标记 1 层
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -53,6 +53,5 @@ public class CryoCannon : GanyuCardModel
     protected override void OnUpgrade()
     {
         base.DynamicVars.Damage.UpgradeValueBy(4m);
-        base.DynamicVars.Power<IcePower>().UpgradeValueBy(1m);
     }
 }

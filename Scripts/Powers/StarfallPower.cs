@@ -27,7 +27,7 @@ public class StarfallPower : CustomPowerModel
 		base.DynamicVars.Damage.BaseValue += damage;
 	}
 
-    public override async Task BeforeTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
         if (side == base.Owner.Side)
         {

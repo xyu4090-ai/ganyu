@@ -1,127 +1,162 @@
-// 加入哪个遗物池，此处为通用
 using BaseLib.Abstracts;
 using BaseLib.Utils;
+using Ganyu.Scripts.Cards;
 using Ganyu.Scripts.Powers;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
-using MegaCrit.Sts2.Core.ValueProps;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Ganyu.Scripts.Relics;
 
 [Pool(typeof(GanyuRelicPool))]
 public class HeavenlyFallUP : CustomRelicModel
 {
-    // 小图标
-    public override string PackedIconPath => $"res://Ganyu/images/relics/heavenly_fall_up_small.png";
-    // 轮廓图标
-    protected override string PackedIconOutlinePath => $"res://Ganyu/images/relics/heavenly_fall_up_small.png";
-    // 大图标
-    protected override string BigIconPath => $"res://Ganyu/images/relics/heavenly_fall_up.png";
+    public override string PackedIconPath => "res://Ganyu/images/relics/heavenly_fall_up_small.png";
+    protected override string PackedIconOutlinePath => "res://Ganyu/images/relics/heavenly_fall_up_small.png";
+    protected override string BigIconPath => "res://Ganyu/images/relics/heavenly_fall_up.png";
 
-    public const int turnsThreshold = 5;
+    private const int ConstellationBonus = 3;
 
-    private const string _turnsKey = "Turns";
+    private int _temporaryBoost;
+    private int _appliedConstellation;
+    private bool _initialized;
 
-    private bool _isActivating;
+    [SavedProperty]
+    public int BaseConstellation { get; set; }
 
-    private int _turnsSeen;
-
-    public override RelicRarity Rarity => RelicRarity.Starter;
-
-    public override bool ShowCounter => true;
-
-    public override int DisplayAmount
+    private void EnsureInitialized()
     {
-        get
+        if (!_initialized)
         {
-            if (!IsActivating)
-            {
-                return TurnsSeen;
-            }
-            return base.DynamicVars["Turns"].IntValue;
+            // 从原始命之座继承当前等级并加上永久加成
+            BaseConstellation = Math.Min(HeavenlyFall.TransferConstellation + ConstellationBonus, 6);
+            _initialized = true;
         }
     }
 
+    public int CurrentConstellation
+    {
+        get
+        {
+            EnsureInitialized();
+            return Math.Min(BaseConstellation + _temporaryBoost, 6);
+        }
+    }
+
+    public override RelicRarity Rarity => RelicRarity.Starter;
+    public override bool ShowCounter => true;
+    public override int DisplayAmount => CurrentConstellation;
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new EnergyVar(1),
-        new DynamicVar("Turns", 3m),
-        new PowerVar<IcePower>(2m)
+        new DynamicVar("Constellation", CurrentConstellation),
+        new DynamicVar("Bonus", ConstellationBonus)
     ];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
-        HoverTipFactory.ForEnergy(this),
-        HoverTipFactory.FromPower<DewNectarPower>(),
-        HoverTipFactory.FromPower<IcePower>()
+        HoverTipFactory.FromPower<ConstellationC1Power>(),
+        HoverTipFactory.FromPower<ConstellationC2Power>(),
+        HoverTipFactory.FromPower<ConstellationC3Power>(),
+        HoverTipFactory.FromPower<ConstellationC4Power>(),
+        HoverTipFactory.FromPower<ConstellationC5Power>(),
+        HoverTipFactory.FromPower<ConstellationC6Power>()
     ];
 
-    private bool IsActivating
+    /// <summary>
+    /// 永久提升命之座等级（通过事件）
+    /// </summary>
+    public void IncreaseBaseConstellation(int amount = 1)
     {
-        get
+        EnsureInitialized();
+        BaseConstellation = Math.Min(BaseConstellation + amount, 6);
+        InvokeDisplayAmountChanged();
+    }
+
+    /// <summary>
+    /// 临时提升命之座等级（通过卡牌，战斗内有效）
+    /// </summary>
+    public void IncreaseTemporaryConstellation(int amount = 1)
+    {
+        EnsureInitialized();
+        _temporaryBoost = Math.Min(_temporaryBoost + amount, 6 - BaseConstellation);
+        InvokeDisplayAmountChanged();
+    }
+
+    /// <summary>
+    /// 临时提升命之座等级并立即施加 buff
+    /// </summary>
+    public async Task IncreaseTemporaryConstellationImmediate(PlayerChoiceContext choiceContext, int amount, CardModel? cardSource = null)
+    {
+        int before = CurrentConstellation;
+        IncreaseTemporaryConstellation(amount);
+        int after = CurrentConstellation;
+        if (after > before)
         {
-            return _isActivating;
-        }
-        set
-        {
-            AssertMutable();
-            _isActivating = value;
-            InvokeDisplayAmountChanged();
+            await ApplyConstellationBuffs(choiceContext, base.Owner.Creature, before, after, cardSource);
+            _appliedConstellation = after;
         }
     }
 
-    [SavedProperty]
-    public int TurnsSeen
+    private async Task ApplyConstellationBuffs(PlayerChoiceContext choiceContext, Creature owner, int fromLevel, int toLevel, CardModel? cardSource = null)
     {
-        get
+        for (int level = fromLevel + 1; level <= toLevel; level++)
         {
-            return _turnsSeen;
-        }
-        set
-        {
-            AssertMutable();
-            _turnsSeen = value;
-            InvokeDisplayAmountChanged();
-        }
-    }
-    public override async Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side, ICombatState ICombatState)
-    {
-        if (side == base.Owner.Creature.Side && ICombatState.RoundNumber <= 1)
-        {
-            Flash();
-            await PowerCmd.Apply<IcePower>(choiceContext, ICombatState.HittableEnemies, base.DynamicVars["IcePower"].BaseValue, base.Owner.Creature, null);
-        }
-        if (side == base.Owner.Creature.Side)
-        {
-            TurnsSeen = (TurnsSeen + 1) % base.DynamicVars["Turns"].IntValue;
-            base.Status = ((TurnsSeen == base.DynamicVars["Turns"].IntValue - 1) ? RelicStatus.Active : RelicStatus.Normal);
-            if (TurnsSeen == 0)
+            switch (level)
             {
-                await PlayerCmd.GainEnergy(base.DynamicVars.Energy.BaseValue, base.Owner);
-                await PowerCmd.Apply<DewNectarPower>(choiceContext,base.Owner.Creature, 1m, base.Owner.Creature, null);
-                Flash();
+                case 1: await PowerCmd.Apply<ConstellationC1Power>(choiceContext, owner, 1m, owner, cardSource); break;
+                case 2: await PowerCmd.Apply<ConstellationC2Power>(choiceContext, owner, 1m, owner, cardSource); break;
+                case 3: await PowerCmd.Apply<ConstellationC3Power>(choiceContext, owner, 1m, owner, cardSource); HeavenlyFallBuffPower.UpdateDynamicVars(owner); break;
+                case 4: await PowerCmd.Apply<ConstellationC4Power>(choiceContext, owner, 1m, owner, cardSource); break;
+                case 5: await PowerCmd.Apply<ConstellationC5Power>(choiceContext, owner, 1m, owner, cardSource); break;
+                case 6: await PowerCmd.Apply<ConstellationC6Power>(choiceContext, owner, 1m, owner, cardSource); break;
             }
         }
     }
 
-    private async Task DoActivateVisuals()
+    public override async Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
-        IsActivating = true;
-        Flash();
-        await Cmd.Wait(1f);
-        IsActivating = false;
+        if (side != base.Owner.Creature.Side) return;
+
+        var player = base.Owner;
+        var current = CurrentConstellation;
+
+        // 第一回合：施加初始命座buff并添加霜华矢
+        if (combatState.RoundNumber <= 1)
+        {
+            HeavenlyFall.ActiveInstance = this;
+            Flash();
+            _temporaryBoost = 0;
+            _appliedConstellation = current;
+            await ApplyConstellationBuffs(choiceContext, base.Owner.Creature, 0, current);
+
+            var frostflakeArrow = combatState.CreateCard<FrostflakeArrow>(player);
+            await CardPileCmd.Add(frostflakeArrow, PileType.Hand);
+        }
+        // 后续回合：检查是否有新解锁的命座
+        else if (current > _appliedConstellation)
+        {
+            Flash();
+            await ApplyConstellationBuffs(choiceContext, base.Owner.Creature, _appliedConstellation, current);
+            _appliedConstellation = current;
+        }
     }
 
-    public override Task AfterCombatEnd(CombatRoom _)
+    public override async Task AfterCombatEnd(CombatRoom _)
     {
-        base.Status = RelicStatus.Normal;
-        return Task.CompletedTask;
+        _temporaryBoost = 0;
+        _appliedConstellation = 0;
+        InvokeDisplayAmountChanged();
     }
 }

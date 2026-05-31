@@ -36,21 +36,22 @@ public class WaterStreamBarrage : GanyuCardModel
         // 根据是否升级来决定攻击的段数（未升级为 2 次，升级后为 3 次）
         int repeatCount = base.IsUpgraded ? 3 : 2;
 
+        // 使用 WithHitCount 确保每段伤害都正确应用活力等加成（参考元素交响曲）
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+            .WithHitCount(repeatCount)
+            .FromCard(this)
+            .Targeting(cardPlay.Target)
+            .Execute(choiceContext);
+
+        // 每段命中后给予 1 层水元素，并检查反应逻辑
         for (int i = 0; i < repeatCount; i++)
         {
-            // 1. 造成单次伤害
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
-                .Targeting(cardPlay.Target)
-                .Execute(choiceContext);
-
-            // 2. 每次命中后给予 1 层水元素，并检查反应逻辑
             await ActionWithContext(choiceContext, async () =>
             {
                 await GanyuElementUtils.ApplyWaterReaction(
-                    cardPlay.Target, 
-                    base.Owner.Creature, 
-                    base.CombatState.HittableEnemies, 
+                    cardPlay.Target,
+                    base.Owner.Creature,
+                    base.CombatState.HittableEnemies,
                     1m
                 );
             });

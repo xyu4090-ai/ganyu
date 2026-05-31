@@ -51,8 +51,6 @@ public sealed class SilentNourishment : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：格挡增加 3 点 (7 -> 10)
         base.DynamicVars.Block.UpgradeValueBy(5m);
-        base.DynamicVars.Power<WetPower>().UpgradeValueBy(1m);
     }
 }

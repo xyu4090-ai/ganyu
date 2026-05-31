@@ -27,9 +27,9 @@ public class FreezingDebuffPower : CustomPowerModel
     public override string? CustomPackedIconPath => "res://Ganyu/images/powers/freezing_power.png";
     public override string? CustomBigIconPath => "res://Ganyu/images/powers/freezing_power.png";
 
-    // 1. 初始化一个固定值的动态变量，默认减伤 40%
+    // 1. 初始化一个固定值的动态变量，默认减伤 10%
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new DynamicVar("CurrentReduction", 40m)
+        new DynamicVar("CurrentReduction", 20m)
     ];
 
     // 2. 封装一个更新减伤 UI 数值的方法
@@ -37,7 +37,7 @@ public class FreezingDebuffPower : CustomPowerModel
     {
         if (base.CombatState == null) return;
         
-        decimal multiplier = 0.6m; // 基础受伤 60% (减伤 40%)
+        decimal multiplier = 0.8m; // 基础受伤 80% (减伤 20%)
         var player = this.Applier;
         
         if (player != null)
@@ -74,18 +74,17 @@ public class FreezingDebuffPower : CustomPowerModel
             return 1m - (reductionVar.BaseValue / 100m);
         }
 
-        return 0.6m; // 兜底
+        return 0.8m; // 兜底
     }
 
     // 4. 在各种时机触发更新，保证玩家鼠标悬停时看到的是最新数值
-    public override Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
+    public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
     {
         // 玩家每次打出牌（很可能触发元素充能产生海人化羽）后，刷新一下数值
         UpdateReductionUI();
-        return Task.CompletedTask;
     }
 
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
         UpdateReductionUI();
         

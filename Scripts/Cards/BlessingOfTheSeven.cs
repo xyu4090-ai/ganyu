@@ -44,10 +44,10 @@ public sealed class BlessingOfTheSeven : GanyuCardModel
         if (exhaustedCount > 0)
         {
             // 使用 System.Random 进行随机分配
-            int element = base.Owner.RunState.Rng.CombatCardSelection.NextInt(0, 6);
 
             for (int i = 0; i < exhaustedCount; i++)
             {
+                int element = base.Owner.RunState.Rng.CombatPotionGeneration.NextInt(0, 6); // 0-5 共6种元素
                 // 随机 0 到 5 对应 6 种元素
                 switch (element)
                 {

@@ -14,7 +14,7 @@ namespace Ganyu.Scripts.Cards;
 public sealed class ElementalPull : GanyuCardModel
 {
     // 修改为 1费，技能牌，目标为自己
-    public ElementalPull() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self, true)
+    public ElementalPull() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self, true)
     {
     }
 
@@ -23,21 +23,22 @@ public sealed class ElementalPull : GanyuCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // 1. 获取弃牌堆
+        // 1. 获取弃牌堆并过滤出攻击牌
         CardPile pile = PileType.Discard.GetPile(base.Owner);
-        
-        // 如果弃牌堆没有牌，则不执行后续操作
-        if (pile.Cards.Count == 0) return;
+        List<CardModel> attackCards = pile.Cards.Where(c => c.Type == CardType.Attack).ToList();
 
-        // 2. 打开选择界面，从弃牌堆选择 1 张牌
+        // 如果弃牌堆没有攻击牌，则不执行后续操作
+        if (attackCards.Count == 0) return;
+
+        // 2. 打开选择界面，从弃牌堆选择 1 张攻击牌
         CardSelectorPrefs prefs = new CardSelectorPrefs(base.SelectionScreenPrompt, 1);
-        CardModel selectedCard = (await CardSelectCmd.FromSimpleGrid(choiceContext, pile.Cards, base.Owner, prefs)).FirstOrDefault();
-        
+        CardModel selectedCard = (await CardSelectCmd.FromSimpleGrid(choiceContext, attackCards, base.Owner, prefs)).FirstOrDefault();
+
         if (selectedCard != null)
         {
             // 3. 将选中的牌放入手牌
             await CardPileCmd.Add(selectedCard, PileType.Hand);
-            
+
             // 4. 将其本回合的耗能变为 0 (复用 RideTheWindPower 中的原版机制)
             selectedCard.SetToFreeThisTurn();
         }

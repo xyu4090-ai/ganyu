@@ -5,6 +5,7 @@ using Ganyu.Scripts.Powers;
 using Ganyu.Scripts.Utils;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
@@ -26,26 +27,14 @@ public class CryaTheory : CustomRelicModel
     // 大图标
     protected override string BigIconPath => $"res://Ganyu/images/relics/crya_theory.png";
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-    new EnergyVar(1),
+    new EnergyVar(1)
     ];
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [
         HoverTipFactory.FromPower<MeltPower>(),
         HoverTipFactory.FromPower<FreezingDebuffPower>(),
         HoverTipFactory.FromPower<SwirlPower>(),
         HoverTipFactory.FromPower<CrystalizePower>(),
-        HoverTipFactory.FromPower<ConductPower>(),
-        HoverTipFactory.FromPower<TracesQilinPower>(),
-        HoverTipFactory.FromPower<HeavenlyFallBuffPower>(),
-        HoverTipFactory.FromPower<OathSilveryMoonPower>(),
-        HoverTipFactory.FromPower<OceanborneFeatherPower>(),
-        HoverTipFactory.FromPower<GuobaAttackPower>(),
-        HoverTipFactory.FromPower<PyronadoPower>(),
-        HoverTipFactory.FromPower<BalefulOmenPower>(),
-        HoverTipFactory.FromPower<MusouShinsetsuPower>(),
-        HoverTipFactory.FromPower<JadeShieldPower>(),
-        HoverTipFactory.FromPower<StarfallPower>(),
-        HoverTipFactory.FromPower<WindSpirit6308Power>(),
-        HoverTipFactory.FromPower<ForbiddenWindSpirit75Power>()
+        HoverTipFactory.FromPower<ConductPower>()
     ];
     public override RelicRarity Rarity => RelicRarity.Starter;
 
@@ -56,7 +45,7 @@ public class CryaTheory : CustomRelicModel
         GanyuElementUtils.ResetReactionCount();
 
     }
-    public override async Task AfterSideTurnStart(CombatSide side, ICombatState ICombatState)
+    public override async Task AfterSideTurnStart(CombatSide side,IReadOnlyList<Creature> participants, ICombatState ICombatState)
     {
         // 如果是玩家回合开始，重置本回合的反应计数器
         if (side == base.Owner.Creature.Side)

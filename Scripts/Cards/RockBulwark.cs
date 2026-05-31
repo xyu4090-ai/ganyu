@@ -57,8 +57,6 @@ public sealed class RockBulwark : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：格挡提升4点 (14 -> 18)，费用降低1点 (2 -> 1)
         base.DynamicVars.Block.UpgradeValueBy(4m);
-        base.DynamicVars.Power<RockPower>().UpgradeValueBy(1m);
     }
 }

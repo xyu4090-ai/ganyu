@@ -77,14 +77,15 @@ public class GanyuCharacter : PlaceholderCharacterModel
         ModelDb.Card<DefendGanyu>(),
         ModelDb.Card<DefendGanyu>(),
         ModelDb.Card<DefendGanyu>(),
-        ModelDb.Card<SkyborneArchery>(),
         ModelDb.Card<TracesQilin>(),
+        ModelDb.Card<ElementArrow>(),
     ];
 
     // 初始遗物
     public override IReadOnlyList<RelicModel> StartingRelics => [
         ModelDb.Relic<HeavenlyFall>(),
         ModelDb.Relic<CryaTheory>(),
+        ModelDb.Relic<ElementalHourglass>(),
     ];
 
     // 攻击建筑师的攻击特效列表

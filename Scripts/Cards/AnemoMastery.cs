@@ -13,8 +13,8 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class AnemoMastery : GanyuCardModel
 {
-    // 费用为1，类型为能力牌，稀有度设为罕见（Uncommon）
-    public AnemoMastery() : base(1, CardType.Power, CardRarity.Rare, TargetType.Self, true)
+    // 费用为2，类型为能力牌，稀有度设为罕见（Uncommon）
+    public AnemoMastery() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
     {
     }
 

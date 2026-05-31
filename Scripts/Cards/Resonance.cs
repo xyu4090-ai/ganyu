@@ -19,7 +19,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class Resonance : GanyuCardModel
 {
-    public Resonance() : base(1, CardType.Skill, CardRarity.Common, TargetType.AnyEnemy, true)
+    public Resonance() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.AnyEnemy, true)
     {
     }
     protected override IEnumerable<DynamicVar> CanonicalVars => [
@@ -31,7 +31,8 @@ public sealed class Resonance : GanyuCardModel
         HoverTipFactory.FromPower<WetPower>(),
         HoverTipFactory.FromPower<FlamePower>(),
         HoverTipFactory.FromPower<ElectroPower>(),
-        HoverTipFactory.FromPower<RockPower>()
+        HoverTipFactory.FromPower<RockPower>(),
+        HoverTipFactory.FromPower<WindPower>()
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -42,7 +43,6 @@ public sealed class Resonance : GanyuCardModel
         // 1. 获得格挡
         await CreatureCmd.GainBlock(base.Owner.Creature, base.DynamicVars.Block, cardPlay);
 
-        // 2. 检查目标身上非冰/风的元素，获得对应充能
         await ActionWithContext(choiceContext, async () =>
         {
             if (target.GetPower<WetPower>() is { } wp && wp.Amount > 0)
@@ -56,12 +56,11 @@ public sealed class Resonance : GanyuCardModel
 
             if (target.GetPower<RockPower>() is { } rp && rp.Amount > 0)
                 await GanyuElementUtils.ApplyRockCharge(base.Owner.Creature, rp.Amount);
-        });
 
-        // 3. 对目标施加 1 层冰元素
-        await ActionWithContext(choiceContext, async () =>
-        {
-            await GanyuElementUtils.ApplyIceReaction(target, base.Owner.Creature, base.CombatState.HittableEnemies, 1m);
+            if (target.GetPower<WindPower>() is { } wip && wip.Amount > 0)
+                await GanyuElementUtils.ApplyWindCharge(base.Owner.Creature, wip.Amount);
+            if(target.GetPower<IcePower>() is { } ip && ip.Amount > 0)
+                await GanyuElementUtils.ApplyIceCharge(base.Owner.Creature, ip.Amount);
         });
     }
 

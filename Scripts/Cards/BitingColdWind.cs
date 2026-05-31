@@ -52,8 +52,6 @@ public sealed class BitingColdWind : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级：Block 数值 8 -> 11
         base.DynamicVars.Block.UpgradeValueBy(3m);
-        base.DynamicVars.Power<WindPower>().UpgradeValueBy(1m);
     }
 }

@@ -1,6 +1,6 @@
+using BaseLib.Extensions;
 using BaseLib.Utils;
 using Ganyu.Scripts.Powers;
-using Ganyu.Scripts.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -28,13 +28,12 @@ public sealed class TracesQilin : GanyuCardModel
     {
     }
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [
-        HoverTipFactory.FromPower<TracesQilinPower>(),
-        HoverTipFactory.FromPower<IcePower>()
+        HoverTipFactory.FromPower<TracesQilinPower>()
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
         new BlockVar(12m, ValueProp.Move),
-        new DynamicVar("IcePower",2m)
+        new PowerVar<TracesQilinPower>(3m)
     ];
 
 
@@ -42,10 +41,12 @@ public sealed class TracesQilin : GanyuCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(base.Owner.Creature, base.DynamicVars.Block, cardPlay);
-        await ActionWithContext(choiceContext, async () =>
-    {
-        await GanyuElementUtils.ApplyIceReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies, base.DynamicVars["IcePower"].BaseValue);
-    });
+        await PowerCmd.Apply<TracesQilinPower>(choiceContext,
+            base.Owner.Creature,
+            base.DynamicVars.Power<TracesQilinPower>().BaseValue,
+            base.Owner.Creature,
+            this
+        );
     }
 
     // 升级后的效果逻辑

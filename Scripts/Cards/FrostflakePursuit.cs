@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Models;
 using BaseLib.Extensions;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 
 namespace Ganyu.Scripts.Cards;
 
@@ -60,9 +61,7 @@ public sealed class FrostflakePursuit : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：伤害增加 4 点 (12 -> 16)
         base.DynamicVars.Damage.UpgradeValueBy(4m);
-        base.DynamicVars.Power<IcePower>().UpgradeValueBy(1m);
     }
 
     // --- 以下是动态减费的核心逻辑 ---
@@ -89,7 +88,7 @@ public sealed class FrostflakePursuit : GanyuCardModel
     }
 
     // 当回合开始时检查（用于处理遗物在回合开始阶段触发的反应）
-    public override Task AfterSideTurnStart(CombatSide side, ICombatState ICombatState)
+    public override Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants,ICombatState ICombatState)
     {
         if (side == base.Owner.Creature.Side && GanyuElementUtils.ReactionsThisTurn > 0)
         {

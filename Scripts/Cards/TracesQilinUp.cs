@@ -1,6 +1,6 @@
+using BaseLib.Extensions;
 using BaseLib.Utils;
 using Ganyu.Scripts.Powers;
-using Ganyu.Scripts.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -28,22 +28,24 @@ public sealed class TracesQilinUp : GanyuCardModel
     {
     }
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [
-        HoverTipFactory.FromPower<TracesQilinPower>(),
-        HoverTipFactory.FromPower<IcePower>()
+        HoverTipFactory.FromPower<TracesQilinPower>()
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(20m, ValueProp.Move),
-    new DynamicVar("IcePower",4m)];
-
+    protected override IEnumerable<DynamicVar> CanonicalVars => [
+        new BlockVar(20m, ValueProp.Move),
+        new PowerVar<TracesQilinPower>(3m)
+    ];
 
     // 打出时的效果逻辑
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(base.Owner.Creature, base.DynamicVars.Block, cardPlay);
-        await ActionWithContext(choiceContext, async () =>
-   {
-       await GanyuElementUtils.ApplyIceReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies, base.DynamicVars["IcePower"].BaseValue);
-   });
+        await PowerCmd.Apply<TracesQilinPower>(choiceContext,
+            base.Owner.Creature,
+            base.DynamicVars.Power<TracesQilinPower>().BaseValue,
+            base.Owner.Creature,
+            this
+        );
     }
 
     // 升级后的效果逻辑
@@ -51,6 +53,5 @@ public sealed class TracesQilinUp : GanyuCardModel
     {
         base.EnergyCost.UpgradeBy(-1);
         base.DynamicVars.Block.UpgradeValueBy(10m);
-        base.DynamicVars["IcePower"].UpgradeValueBy(2m);
     }
 }

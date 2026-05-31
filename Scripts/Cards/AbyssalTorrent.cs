@@ -58,7 +58,6 @@ public class AbyssalTorrent : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Damage.UpgradeValueBy(3m); // 伤害提升至 16
-        base.DynamicVars.Power<WetPower>().UpgradeValueBy(1m);
+        base.DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

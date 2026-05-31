@@ -57,8 +57,6 @@ public sealed class ThunderstormGathering : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：给予的雷元素 2 -> 3 (+1)
-        base.DynamicVars.Power<ElectroPower>().UpgradeValueBy(1m);
         base.DynamicVars.Energy.UpgradeValueBy(1m);
     }
 }

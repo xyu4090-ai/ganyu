@@ -2,6 +2,7 @@ using BaseLib.Abstracts;
 using Ganyu.Scripts.Utils;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ public class OathSilveryMoonPower : CustomPowerModel
     public override string? CustomBigIconPath => "res://Ganyu/images/powers/oath_silvery_moon.png";
 
     // 回合开始时触发
-    public override async Task AfterSideTurnStart(CombatSide side, ICombatState ICombatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants,ICombatState ICombatState)
     {
         if (side == base.Owner.Side)
         {

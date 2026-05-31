@@ -86,8 +86,6 @@ public class ScorchedEarthTactics : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级后格挡提升 3 点 (8 -> 11)
         base.DynamicVars.Block.UpgradeValueBy(3m);
-        base.DynamicVars.Power<FlamePower>().UpgradeValueBy(1m);
     }
 }

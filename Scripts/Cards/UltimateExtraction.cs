@@ -16,7 +16,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class UltimateExtraction : GanyuCardModel
 {
-    // 初始化：3费，技能牌，稀有，目标为全体敌人
+    // 初始化：2费，技能牌，稀有，目标为全体敌人
     public UltimateExtraction() : base(2, CardType.Skill, CardRarity.Rare, TargetType.AllEnemies, true)
     {
     }

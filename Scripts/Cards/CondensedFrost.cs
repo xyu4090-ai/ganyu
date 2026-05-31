@@ -45,8 +45,6 @@ public sealed class CondensedFrost : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级后层数增加 1 (2 -> 3)
-        base.DynamicVars.Power<IcePower>().UpgradeValueBy(1m);
         base.DynamicVars.Block.UpgradeValueBy(3m);
     }
 }

@@ -64,8 +64,6 @@ public sealed class ElectroWebWeaving : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：雷元素 2 -> 3 (+1)
-        base.DynamicVars.Power<ElectroPower>().UpgradeValueBy(1m);
         // 升级效果：虚弱 1 -> 2 (+1)
         base.DynamicVars.Power<WeakPower>().UpgradeValueBy(1m);
     }

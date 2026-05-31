@@ -55,9 +55,6 @@ public sealed class StaticSpark : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：伤害 4 -> 6 (+2)
         base.DynamicVars.Damage.UpgradeValueBy(2m);
-        // 升级效果：雷元素层数 1 -> 2 (+1)
-        base.DynamicVars.Power<ElectroPower>().UpgradeValueBy(1m);
     }
 }

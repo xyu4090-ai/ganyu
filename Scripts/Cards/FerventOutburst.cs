@@ -16,7 +16,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class FerventOutburst : GanyuCardModel
 {
-    public FerventOutburst() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.AnyEnemy, true)
+    public FerventOutburst() : base(1, CardType.Skill, CardRarity.Rare, TargetType.AnyEnemy, true)
     {
     }
 
@@ -61,6 +61,6 @@ public sealed class FerventOutburst : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Power<FlamePower>().UpgradeValueBy(2m);
+        base.EnergyCost.UpgradeBy(-1);
     }
 }

@@ -16,7 +16,7 @@ public sealed class GaleForce : GanyuCardModel
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new DamageVar(8m, ValueProp.Move), // 基础伤害 10
+        new DamageVar(11m, ValueProp.Move), // 基础伤害 10
         new CardsVar(2)                    // 抽牌数量 1
     ];
 

@@ -1,3 +1,4 @@
+using BaseLib.Extensions;
 using BaseLib.Utils;
 using Ganyu.Scripts.Powers;
 using Ganyu.Scripts.Utils;
@@ -35,12 +36,11 @@ public class IgniteFlame : GanyuCardModel
             {
                 if (enemy.IsAlive)
                 {
-                    // 传入 1 层火元素
                     await GanyuElementUtils.ApplyFireReaction(
                         enemy,
                         base.Owner.Creature,
                         base.CombatState.HittableEnemies,
-                        1m
+                        base.DynamicVars.Power<FlamePower>().BaseValue
                     );
                 }
             }
@@ -52,6 +52,6 @@ public class IgniteFlame : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        base.EnergyCost.UpgradeBy(-1);
+        base.DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

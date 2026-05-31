@@ -19,10 +19,10 @@ public sealed class ShatterBolt : GanyuCardModel
         new ExtraDamageVar(4m),      // 额外的碎冰伤害
         // 核心逻辑：使用 CalculatedDamageVar 自动计算最终伤害
         // 最终伤害公式 = CalculationBase + (ExtraDamage * Multiplier)
-        new CalculatedDamageVar(ValueProp.Move).WithMultiplier((CardModel card, Creature? target) => 
+        new CalculatedDamageVar(ValueProp.Move).WithMultiplier((CardModel card, Creature? target) =>
         {
-            // 如果目标存在且拥有“结冰”状态，乘数为 1，否则为 0
-            if (target != null && target.GetPower<FreezingDebuffPower>() != null)
+            // 如果目标存在且拥有冰元素，乘数为 1，否则为 0
+            if (target != null && target.GetPower<IcePower>() is { Amount: > 0 })
             {
                 return 1m;
             }
@@ -35,7 +35,7 @@ public sealed class ShatterBolt : GanyuCardModel
     }
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [
-        HoverTipFactory.FromPower<FreezingDebuffPower>()
+        HoverTipFactory.FromPower<IcePower>()
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -49,8 +49,8 @@ public sealed class ShatterBolt : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级：基础伤害 +3 (11)，额外伤害 +4 (14)
-        base.DynamicVars.CalculationBase.UpgradeValueBy(3m);
+        // 升级：基础伤害 +4，额外伤害 +2
+        base.DynamicVars.CalculationBase.UpgradeValueBy(4m);
         base.DynamicVars.ExtraDamage.UpgradeValueBy(2m);
     }
 }

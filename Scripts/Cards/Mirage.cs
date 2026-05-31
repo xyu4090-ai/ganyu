@@ -28,7 +28,7 @@ public class Mirage : GanyuCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
         new PowerVar<OceanborneFeatherPower>(1m), // 基础：1层海人化羽
-        new PowerVar<WetPower>(1m)                // 基础：2层水元素
+        new PowerVar<WetPower>(2m)                // 基础：2层水元素
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -62,7 +62,6 @@ public class Mirage : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级后海人化羽层数提升 1 层（即变为 2 层）
-        base.DynamicVars.Power<OceanborneFeatherPower>().UpgradeValueBy(1m);
+        base.EnergyCost.UpgradeBy(-1);
     }
 }

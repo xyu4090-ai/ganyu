@@ -13,7 +13,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class BloomingBlazeflower : GanyuCardModel
 {
-    public BloomingBlazeflower() : base(2, CardType.Power, CardRarity.Rare, TargetType.Self, true)
+    public BloomingBlazeflower() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
     {
     }
 

@@ -1,5 +1,6 @@
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.HoverTips;
 
 namespace Ganyu.Scripts.Powers;
 
@@ -11,4 +12,8 @@ public class ElectroChargePower : CustomPowerModel
 
     public override string? CustomPackedIconPath => "res://Ganyu/images/powers/electro_charge.png";
     public override string? CustomBigIconPath => "res://Ganyu/images/powers/electro_charge.png";
+       protected override IEnumerable<IHoverTip> ExtraHoverTips => [
+        HoverTipFactory.FromPower<BalefulOmenPower>(),
+        HoverTipFactory.FromPower<MusouShinsetsuPower>()
+    ];
 }

@@ -7,19 +7,20 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace Ganyu.Scripts.Cards;
 
-[Pool(typeof(GanyuCardPool))]
+[Pool(typeof(TokenCardPool))]
 public class WaterArrow : GanyuCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Common;
+    private const CardRarity rarity = CardRarity.Token;
     private const TargetType targetType = TargetType.AnyEnemy;
 
-    public WaterArrow() : base(energyCost, type, rarity, targetType, true) { }
+    public WaterArrow() : base(energyCost, type, rarity, targetType, false) { }
 
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [
@@ -45,7 +46,6 @@ public class WaterArrow : GanyuCardModel
     }
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Damage.UpgradeValueBy(3m); // 升级后造成 9 点伤害
-        base.DynamicVars.Power<WetPower>().UpgradeValueBy(1m); 
+        base.DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

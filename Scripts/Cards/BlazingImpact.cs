@@ -17,7 +17,7 @@ namespace Ganyu.Scripts.Cards;
 public class BlazingImpact : GanyuCardModel
 {
     // 费用 1，攻击牌，普通稀有度，单体目标
-    public BlazingImpact() : base(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy, true)
+    public BlazingImpact() : base(2, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy, true)
     {
     }
 
@@ -52,8 +52,6 @@ public class BlazingImpact : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级后伤害提升 4 点 (达到 13 点)
         base.DynamicVars.Damage.UpgradeValueBy(4m);
-        base.DynamicVars.Power<FlamePower>().UpgradeValueBy(1m); 
     }
 }

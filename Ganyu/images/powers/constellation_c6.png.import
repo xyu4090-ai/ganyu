@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://is08ewvw70cr"
-path="res://.godot/imported/dew_nectar_power.png-290d576f738a696bb6d67a27af99b9ae.ctex"
+uid="uid://cabn37qisc4is"
+path="res://.godot/imported/constellation_c6.png-f2c35a4511b11c175e6fd1cfe79fe28d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Ganyu/images/powers/dew_nectar_power.png"
-dest_files=["res://.godot/imported/dew_nectar_power.png-290d576f738a696bb6d67a27af99b9ae.ctex"]
+source_file="res://Ganyu/images/powers/constellation_c6.png"
+dest_files=["res://.godot/imported/constellation_c6.png-f2c35a4511b11c175e6fd1cfe79fe28d.ctex"]
 
 [params]
 

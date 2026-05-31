@@ -14,7 +14,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class PeaksOfGuyun : GanyuCardModel
 {
-    public PeaksOfGuyun() : base(2, CardType.Power, CardRarity.Rare, TargetType.Self, true)
+    public PeaksOfGuyun() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
     {
     }
 

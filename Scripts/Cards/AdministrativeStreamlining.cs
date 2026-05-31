@@ -12,7 +12,7 @@ namespace Ganyu.Scripts.Cards;
 [Pool(typeof(GanyuCardPool))]
 public sealed class AdministrativeStreamlining : GanyuCardModel
 {
-    public AdministrativeStreamlining() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
+    public AdministrativeStreamlining() : base(2, CardType.Power, CardRarity.Rare, TargetType.Self, true)
     {
     }
 

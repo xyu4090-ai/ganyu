@@ -57,7 +57,6 @@ public sealed class SwirlingStorm : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Power<WindPower>().UpgradeValueBy(1m);
         base.DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

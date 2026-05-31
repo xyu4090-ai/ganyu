@@ -18,7 +18,7 @@ public sealed class MeteorStrike : GanyuCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Uncommon;
+    private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.AnyEnemy;
 
     public MeteorStrike() : base(energyCost, type, rarity, targetType, true) { }
@@ -57,8 +57,6 @@ public sealed class MeteorStrike : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：伤害 +8 (26 -> 34)，岩元素 +1 (3 -> 4)
         base.DynamicVars.Damage.UpgradeValueBy(4m);
-        base.DynamicVars.Power<RockPower>().UpgradeValueBy(1m);
     }
 }

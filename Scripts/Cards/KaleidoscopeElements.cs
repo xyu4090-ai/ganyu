@@ -38,36 +38,32 @@ public sealed class KaleidoscopeElements : GanyuCardModel
     {
         int count = base.DynamicVars.Repeat.IntValue;
 
+        // 使用 WithHitCount 确保每段伤害都正确应用活力等加成（参考元素交响曲）
+        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue)
+            .WithHitCount(count)
+            .FromCard(this)
+            .Targeting(cardPlay.Target)
+            .Execute(choiceContext);
+
+        // 每段命中后给予 1 层随机元素
         for (int i = 0; i < count; i++)
         {
-            // 如果目标已死亡，停止后续所有连击和反应
             if (cardPlay.Target == null || !cardPlay.Target.IsAlive) break;
 
-            // 1. 造成单次伤害
-            await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue)
-                .FromCard(this)
-                .Targeting(cardPlay.Target)
-                .Execute(choiceContext);
+            int choice = base.Owner.RunState.Rng.CombatCardSelection.NextInt(0, 6);
 
-            // 2. 伤害结算后目标若存活，给予 1 层随机元素
-            if (cardPlay.Target != null && cardPlay.Target.IsAlive)
+            await ActionWithContext(choiceContext, async () =>
             {
-                // 生成 0-5 的随机数（代表 6 种元素）
-                int choice = base.Owner.RunState.Rng.CombatCardSelection.NextInt(0, 6);
-                
-                await ActionWithContext(choiceContext, async () =>
+                switch (choice)
                 {
-                    switch (choice)
-                    {
-                        case 0: await GanyuElementUtils.ApplyIceReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
-                        case 1: await GanyuElementUtils.ApplyWaterReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
-                        case 2: await GanyuElementUtils.ApplyFireReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
-                        case 3: await GanyuElementUtils.ApplyElectroReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
-                        case 4: await GanyuElementUtils.ApplyWindReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
-                        case 5: await GanyuElementUtils.ApplyRockReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
-                    }
-                });
-            }
+                    case 0: await GanyuElementUtils.ApplyIceReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
+                    case 1: await GanyuElementUtils.ApplyWaterReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
+                    case 2: await GanyuElementUtils.ApplyFireReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
+                    case 3: await GanyuElementUtils.ApplyElectroReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
+                    case 4: await GanyuElementUtils.ApplyWindReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
+                    case 5: await GanyuElementUtils.ApplyRockReaction(cardPlay.Target, base.Owner.Creature, base.CombatState.HittableEnemies); break;
+                }
+            });
         }
     }
 

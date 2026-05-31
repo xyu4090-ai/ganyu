@@ -5,7 +5,6 @@ using Ganyu.Scripts.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -17,10 +16,6 @@ public sealed class ElementalSymbiosis : GanyuCardModel
     public ElementalSymbiosis() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self, true)
     {
     }
-
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [
-        HoverTipFactory.FromPower<IceChargePower>() // 提醒玩家这不包括冰元素
-    ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
         // 使用 BlockVar 来定义描述中显示的 3 点或 5 点格挡

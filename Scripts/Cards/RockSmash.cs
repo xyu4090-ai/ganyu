@@ -21,7 +21,7 @@ public sealed class RockSmash : GanyuCardModel
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
-        new DamageVar(12m, ValueProp.Move), // 基础伤害 14
+        new DamageVar(16m, ValueProp.Move), // 基础伤害 14
         new DynamicVar("Repeat",1m)
     ];
 

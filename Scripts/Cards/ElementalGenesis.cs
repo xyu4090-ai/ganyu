@@ -25,12 +25,8 @@ public sealed class ElementalGenesis : GanyuCardModel
     ];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [
-        HoverTipFactory.FromPower<IcePower>(),
-        HoverTipFactory.FromPower<WetPower>(),
-        HoverTipFactory.FromPower<FlamePower>(),
-        HoverTipFactory.FromPower<ElectroPower>(),
-        HoverTipFactory.FromPower<WindPower>(),
-        HoverTipFactory.FromPower<RockPower>()
+        HoverTipFactory.FromPower<ConductPower>(),
+        HoverTipFactory.FromPower<FreezingDebuffPower>()
     ];
 
     public ElementalGenesis() : base(0, CardType.Skill, CardRarity.Rare, TargetType.AnyEnemy, true)

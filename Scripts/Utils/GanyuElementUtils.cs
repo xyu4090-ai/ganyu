@@ -69,7 +69,7 @@ public static class GanyuElementUtils
     {
         if (amount <= 0) return;
         decimal remaining = amount;
-        await ApplyIceCharge(source, remaining);
+        bool reactionTriggered = false;
 
         // 优先级 1. 遇风扩散 (不再检查 SwirlPower，直接检查 WindPower)
         if (remaining > 0 && target.GetPower<WindPower>() is { } winp && winp.Amount > 0)
@@ -79,6 +79,7 @@ public static class GanyuElementUtils
             await TriggerSwirl(target, source, rc, hittableEnemies); // 触发计数
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "ICE");
             remaining -= rc;
+            reactionTriggered = true;
         }
 
         // 优先级 2. 融化 (与 FlamePower 反应)
@@ -88,6 +89,7 @@ public static class GanyuElementUtils
             await ConsumeChargesWithRetention(target, source, fp, rc);
             await TriggerMelt(target, source, rc);
             remaining -= rc;
+            reactionTriggered = true;
         }
 
         // 优先级 3. 结冰 (与 WetPower 反应)
@@ -97,6 +99,7 @@ public static class GanyuElementUtils
             await ConsumeChargesWithRetention(target, source, wp, rc);
             await TriggerFrozen(target, source, rc);
             remaining -= rc;
+            reactionTriggered = true;
         }
 
         // 优先级 4. 结晶 (与 RockPower 反应)
@@ -106,6 +109,7 @@ public static class GanyuElementUtils
             await ConsumeChargesWithRetention(target, source, rp, rc);
             await TriggerCrystallize(target, source, rc * 2);
             remaining -= rc;
+            reactionTriggered = true;
         }
 
         // 优先级 5. 超导 (与 ElectroPower 反应)
@@ -115,11 +119,18 @@ public static class GanyuElementUtils
             await ConsumeChargesWithRetention(target, source, ep, rc);
             await TriggerConduct(target, source, rc, hittableEnemies);
             remaining -= rc;
+            reactionTriggered = true;
         }
 
         if (remaining > 0)
         {
             await PowerCmd.Apply<IcePower>(CurrentContext, target, remaining, source, null);
+        }
+
+        // 只有未触发元素反应时才增加充能（冰元素精通除外）
+        if (!reactionTriggered || source.GetPower<RetainElementPower>() is { } iceMastery && iceMastery.Amount > 0)
+        {
+            await ApplyIceCharge(source, amount);
         }
     }
 
@@ -128,7 +139,8 @@ public static class GanyuElementUtils
     {
         if (amount <= 0) return;
         decimal remaining = amount;
-        await ApplyWaterCharge(source, remaining);
+        bool reactionTriggered = false;
+
         // 遇风扩散
         if (remaining > 0 && target.GetPower<WindPower>() is { } winp && winp.Amount > 0)
         {
@@ -137,6 +149,7 @@ public static class GanyuElementUtils
             await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "WATER");
             remaining -= rc;
+            reactionTriggered = true;
         }
 
         if (remaining > 0 && target.GetPower<IcePower>() is { } ip && ip.Amount > 0)
@@ -145,11 +158,29 @@ public static class GanyuElementUtils
             await ConsumeChargesWithRetention(target, source, ip, rc);
             await TriggerFrozen(target, source, rc);
             remaining -= rc;
+            reactionTriggered = true;
+        }
+
+        // 岩性变化：水+岩 → 岩化反应
+        if (remaining > 0 && target.GetPower<RockPower>() is { } rp && rp.Amount > 0
+            && source.GetPower<RockTransformationPower>() is { } rtPower && rtPower.Amount > 0)
+        {
+            decimal rc = Math.Min(remaining, rp.Amount);
+            await ConsumeChargesWithRetention(target, source, rp, rc);
+            await TriggerPetrification(target, source, rc);
+            remaining -= rc;
+            reactionTriggered = true;
         }
 
         if (remaining > 0)
         {
             await PowerCmd.Apply<WetPower>(CurrentContext, target, remaining, source, null);
+        }
+
+        // 只有未触发元素反应时才增加充能（水元素精通除外）
+        if (!reactionTriggered || source.GetPower<HydroMasteryPower>() is { } hydroMastery && hydroMastery.Amount > 0)
+        {
+            await ApplyWaterCharge(source, amount);
         }
     }
 
@@ -158,13 +189,13 @@ public static class GanyuElementUtils
     {
         if (amount <= 0) return;
         decimal remaining = amount;
-        await ApplyFireCharge(source, remaining);
-        // 【新增】触发“烈焰绽放”：检查来源者是否有该能力，如果有则触发群体伤害
+        bool reactionTriggered = false;
+
+        // 【新增】触发"烈焰绽放"：检查来源者是否有该能力，如果有则触发群体伤害
         if (source?.GetPower<BloomingBlazeflowerPower>() is { } bloomPower)
         {
             await bloomPower.Trigger();
         }
-
 
         // 遇风扩散
         if (remaining > 0 && target.GetPower<WindPower>() is { } winp && winp.Amount > 0)
@@ -174,6 +205,7 @@ public static class GanyuElementUtils
             await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "FIRE");
             remaining -= rc;
+            reactionTriggered = true;
         }
 
         if (remaining > 0 && target.GetPower<IcePower>() is { } ip && ip.Amount > 0)
@@ -182,11 +214,29 @@ public static class GanyuElementUtils
             await ConsumeChargesWithRetention(target, source, ip, rc);
             await TriggerMelt(target, source, rc);
             remaining -= rc;
+            reactionTriggered = true;
+        }
+
+        // 岩性变化：火+岩 → 岩化反应
+        if (remaining > 0 && target.GetPower<RockPower>() is { } rp && rp.Amount > 0
+            && source.GetPower<RockTransformationPower>() is { } rtPower && rtPower.Amount > 0)
+        {
+            decimal rc = Math.Min(remaining, rp.Amount);
+            await ConsumeChargesWithRetention(target, source, rp, rc);
+            await TriggerPetrification(target, source, rc);
+            remaining -= rc;
+            reactionTriggered = true;
         }
 
         if (remaining > 0)
         {
             await PowerCmd.Apply<FlamePower>(CurrentContext, target, remaining, source, null);
+        }
+
+        // 只有未触发元素反应时才增加充能（火元素精通除外）
+        if (!reactionTriggered || source.GetPower<PyroMasteryPower>() is { } pyroMastery && pyroMastery.Amount > 0)
+        {
+            await ApplyFireCharge(source, amount);
         }
     }
 
@@ -195,7 +245,7 @@ public static class GanyuElementUtils
     {
         if (amount <= 0) return;
         decimal remaining = amount;
-        await ApplyElectroCharge(source, remaining);
+        bool reactionTriggered = false;
 
         // 遇风扩散
         if (remaining > 0 && target.GetPower<WindPower>() is { } winp && winp.Amount > 0)
@@ -205,6 +255,7 @@ public static class GanyuElementUtils
             await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "ELECTRO");
             remaining -= rc;
+            reactionTriggered = true;
         }
 
         if (remaining > 0 && target.GetPower<IcePower>() is { } ip && ip.Amount > 0)
@@ -213,11 +264,29 @@ public static class GanyuElementUtils
             await ConsumeChargesWithRetention(target, source, ip, rc);
             await TriggerConduct(target, source, rc, hittableEnemies);
             remaining -= rc;
+            reactionTriggered = true;
+        }
+
+        // 岩性变化：雷+岩 → 岩化反应
+        if (remaining > 0 && target.GetPower<RockPower>() is { } rp && rp.Amount > 0
+            && source.GetPower<RockTransformationPower>() is { } rtPower && rtPower.Amount > 0)
+        {
+            decimal rc = Math.Min(remaining, rp.Amount);
+            await ConsumeChargesWithRetention(target, source, rp, rc);
+            await TriggerPetrification(target, source, rc);
+            remaining -= rc;
+            reactionTriggered = true;
         }
 
         if (remaining > 0)
         {
             await PowerCmd.Apply<ElectroPower>(CurrentContext, target, remaining, source, null);
+        }
+
+        // 只有未触发元素反应时才增加充能（雷元素精通除外）
+        if (!reactionTriggered || source.GetPower<ElectroMasteryPower>() is { } electroMastery && electroMastery.Amount > 0)
+        {
+            await ApplyElectroCharge(source, amount);
         }
     }
 
@@ -226,7 +295,7 @@ public static class GanyuElementUtils
     {
         if (amount <= 0) return;
         decimal remaining = amount;
-        await ApplyWindCharge(source, remaining);
+        bool reactionTriggered = false;
 
         // 风遇到任何元素直接产生该元素的扩散
         if (remaining > 0 && target.GetPower<IcePower>() is { } ip && ip.Amount > 0)
@@ -236,6 +305,7 @@ public static class GanyuElementUtils
             await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "ICE");
             remaining -= rc;
+            reactionTriggered = true;
         }
         else if (remaining > 0 && target.GetPower<WetPower>() is { } wp && wp.Amount > 0)
         {
@@ -244,6 +314,7 @@ public static class GanyuElementUtils
             await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "WATER");
             remaining -= rc;
+            reactionTriggered = true;
         }
         else if (remaining > 0 && target.GetPower<FlamePower>() is { } fp && fp.Amount > 0)
         {
@@ -252,6 +323,7 @@ public static class GanyuElementUtils
             await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "FIRE");
             remaining -= rc;
+            reactionTriggered = true;
         }
         else if (remaining > 0 && target.GetPower<ElectroPower>() is { } ep && ep.Amount > 0)
         {
@@ -260,6 +332,7 @@ public static class GanyuElementUtils
             await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "ELECTRO");
             remaining -= rc;
+            reactionTriggered = true;
         }
         else if (remaining > 0 && target.GetPower<RockPower>() is { } rp && rp.Amount > 0)
         {
@@ -268,11 +341,18 @@ public static class GanyuElementUtils
             await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "ROCK");
             remaining -= rc;
+            reactionTriggered = true;
         }
 
         if (remaining > 0)
         {
             await PowerCmd.Apply<WindPower>(CurrentContext, target, remaining, source, null);
+        }
+
+        // 只有未触发元素反应时才增加充能（风元素精通除外）
+        if (!reactionTriggered || source.GetPower<AnemoMasteryPower>() is { } anemoMastery && anemoMastery.Amount > 0)
+        {
+            await ApplyWindCharge(source, amount);
         }
     }
 
@@ -281,18 +361,20 @@ public static class GanyuElementUtils
     {
         if (amount <= 0) return;
         decimal remaining = amount;
-        await ApplyRockCharge(source, remaining);
-        // 【新增】触发“孤云峰岩”：检查来源者是否有该能力，如果有则触发格挡
+        bool reactionTriggered = false;
+
+        // 【新增】触发"孤云峰岩"：检查来源者是否有该能力，如果有则触发格挡
         if (source?.GetPower<PeaksOfGuyunPower>() is { } peaksPower)
         {
             await peaksPower.Trigger();
         }
-        // 【新增】触发“地脉震颤”：检查来源者是否有该能力，如果有则对全体敌人造成伤害
+        // 【新增】触发"地脉震颤"：检查来源者是否有该能力，如果有则对全体敌人造成伤害
         if (source?.GetPower<LeylineTremorPower>() is { } tremorPower)
         {
             // 将 hittableEnemies 传递过去，避免在 Power 内部硬找目标
             await tremorPower.Trigger(hittableEnemies);
         }
+
         // 遇风扩散
         if (remaining > 0 && target.GetPower<WindPower>() is { } winp && winp.Amount > 0)
         {
@@ -301,6 +383,7 @@ public static class GanyuElementUtils
             await TriggerSwirl(target, source, rc, hittableEnemies);
             await TriggerSwirlElement(target, source, rc, hittableEnemies, "ROCK");
             remaining -= rc;
+            reactionTriggered = true;
         }
 
         if (remaining > 0 && target.GetPower<IcePower>() is { } ip && ip.Amount > 0)
@@ -309,11 +392,47 @@ public static class GanyuElementUtils
             await ConsumeChargesWithRetention(target, source, ip, rc);
             await TriggerCrystallize(target, source, rc * 2);
             remaining -= rc;
+            reactionTriggered = true;
+        }
+
+        // 岩性变化：岩+火/水/雷 → 岩化反应（优先级：冰>火>水>雷）
+        if (remaining > 0 && source.GetPower<RockTransformationPower>() is { } rtPower && rtPower.Amount > 0)
+        {
+            if (target.GetPower<FlamePower>() is { } fp && fp.Amount > 0)
+            {
+                decimal rc = Math.Min(remaining, fp.Amount);
+                await ConsumeChargesWithRetention(target, source, fp, rc);
+                await TriggerPetrification(target, source, rc);
+                remaining -= rc;
+                reactionTriggered = true;
+            }
+            else if (target.GetPower<WetPower>() is { } wp && wp.Amount > 0)
+            {
+                decimal rc = Math.Min(remaining, wp.Amount);
+                await ConsumeChargesWithRetention(target, source, wp, rc);
+                await TriggerPetrification(target, source, rc);
+                remaining -= rc;
+                reactionTriggered = true;
+            }
+            else if (target.GetPower<ElectroPower>() is { } ep && ep.Amount > 0)
+            {
+                decimal rc = Math.Min(remaining, ep.Amount);
+                await ConsumeChargesWithRetention(target, source, ep, rc);
+                await TriggerPetrification(target, source, rc);
+                remaining -= rc;
+                reactionTriggered = true;
+            }
         }
 
         if (remaining > 0)
         {
             await PowerCmd.Apply<RockPower>(CurrentContext, target, remaining, source, null);
+        }
+
+        // 只有未触发元素反应时才增加充能（岩元素精通除外）
+        if (!reactionTriggered || source.GetPower<GeoMasteryPower>() is { } geoMastery && geoMastery.Amount > 0)
+        {
+            await ApplyRockCharge(source, amount);
         }
     }
 
@@ -350,7 +469,7 @@ public static class GanyuElementUtils
 
     public static async Task TriggerMelt(Creature target, Creature source, decimal count)
     {
-        // 获取当前角色的反应倍率（例如是否有“元素溢出”能力）
+        // 获取当前角色的反应倍率（例如是否有"元素溢出"能力）
         decimal multiplier = await GetReactionMultiplier(source);
 
         // 修改处：不再施加 MeltPower，改为直接造成伤害
@@ -367,7 +486,7 @@ public static class GanyuElementUtils
             );
         }
 
-        // 依然触发反应通知，以确保“不竭岁收”或“政务精简”等能力正常触发
+        // 依然触发反应通知，以确保"不竭岁收"或"政务精简"等能力正常触发
         await NotifyReaction(source, count * multiplier);
     }
 
@@ -375,7 +494,7 @@ public static class GanyuElementUtils
     {
         decimal multiplier = await GetReactionMultiplier(source);
 
-        // 检查玩家身上是否有“坚如磐石”能力
+        // 检查玩家身上是否有"坚如磐石"能力
         var solidAsRockPower = source.GetPower<SolidAsRockPower>();
         if (solidAsRockPower != null)
         {
@@ -395,11 +514,28 @@ public static class GanyuElementUtils
         await NotifyReaction(source, count * multiplier / 2);
     }
 
+    public static async Task TriggerPetrification(Creature target, Creature source, decimal count)
+    {
+        decimal multiplier = await GetReactionMultiplier(source);
+
+        // 检查玩家身上是否有"坚如磐石"能力
+        var solidAsRockPower = source.GetPower<SolidAsRockPower>();
+        if (solidAsRockPower != null)
+        {
+            solidAsRockPower.TriggerPetrification();
+        }
+
+        // 给予目标岩化debuff
+        await PowerCmd.Apply<PetrificationPower>(CurrentContext, target, count * multiplier, source, null);
+
+        await NotifyReaction(source, count * multiplier);
+    }
+
     public static async Task TriggerSwirl(Creature target, Creature source, decimal count, IReadOnlyList<Creature>? hittableEnemies)
     {
         decimal multiplier = await GetReactionMultiplier(source);
         SwirlsThisTurn += (int)count; // 记录扩散次数
-        // 【新增】检查玩家身上是否有“顺风而行”能力
+        // 【新增】检查玩家身上是否有"顺风而行"能力
         if (source?.GetPower<RideTheWindPower>() is { } rideTheWind)
         {
             // 根据扩散反应发生的层数，触发对应次数的减费
@@ -469,35 +605,36 @@ public static class GanyuElementUtils
     public static async Task ApplyIceCharge(Creature source, decimal amount)
     {
         if (source == null || amount <= 0) return;
-
-        // 【新增】检查冰元素精通Buff：每次获得充能时额外增加对应的层数
-        if (source.GetPower<RetainElementPower>() is { } retainPower && retainPower.Amount > 0)
+        // 【新增】检查并触发元素共生
+        if (source.GetPower<ElementalSymbiosisPower>() is { } symbiosis)
         {
-            amount += retainPower.Amount;
+            await symbiosis.Trigger();
         }
 
         decimal oldAmount = source.GetPower<IceChargePower>()?.Amount ?? 0m;
         decimal total = oldAmount + amount;
 
-        // 1. 计算触发“10层循环”的次数
-        int num10s = (int)(Math.Floor(total / 10m) - Math.Floor(oldAmount / 10m));
+        // 1. 计算触发"6层循环"的次数
+        int num6s = (int)(Math.Floor(total / 6m) - Math.Floor(oldAmount / 6m));
 
-        // 2. 计算触发“5层阶段”的次数
-        int num5s = (int)(Math.Floor(total / 10m + (total % 10m >= 5m ? 1m : 0m))
-                       - Math.Floor(oldAmount / 10m + (oldAmount % 10m >= 5m ? 1m : 0m)));
+        // 2. 计算触发"3层阶段"的次数
+        int num3s = (int)(Math.Floor(total / 6m + (total % 6m >= 3m ? 1m : 0m))
+                       - Math.Floor(oldAmount / 6m + (oldAmount % 6m >= 3m ? 1m : 0m)));
 
         // 3. 发放奖励
-        if (num10s > 0)
-            await PowerCmd.Apply<HeavenlyFallBuffPower>(CurrentContext, source, num10s * 2m, source, null);
+        if (num6s > 0)
+            await PowerCmd.Apply<HeavenlyFallBuffPower>(CurrentContext, source, num6s * 2m, source, null);
 
-        if (num5s > 0)
+        if (num3s > 0)
         {
-            await PowerCmd.Apply<TracesQilinPower>(CurrentContext, source, num5s * 3m, source, null);
+            // 二命获麟：山泽麟迹多增加两层
+            decimal tracesAmount = num3s * 3m + (source.GetPower<ConstellationC2Power>() != null ? 2m : 0m);
+            await PowerCmd.Apply<TracesQilinPower>(CurrentContext, source, tracesAmount, source, null);
             GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/ganyu_5.mp3");
         }
 
         // 4. 更新充能层数
-        decimal remainder = total % 10m;
+        decimal remainder = total % 6m;
         var existingPower = source.GetPower<IceChargePower>();
         if (existingPower != null) await PowerCmd.Remove(existingPower);
 
@@ -508,11 +645,6 @@ public static class GanyuElementUtils
     public static async Task ApplyWaterCharge(Creature source, decimal amount)
     {
         if (source == null || amount <= 0) return;
-        // 【新增】检查水元素精通Buff：每次获得充能时额外增加对应的层数
-        if (source.GetPower<HydroMasteryPower>() is { } hydroMastery && hydroMastery.Amount > 0)
-        {
-            amount += hydroMastery.Amount;
-        }
         // 【新增】检查并触发元素共生
         if (source.GetPower<ElementalSymbiosisPower>() is { } symbiosis)
         {
@@ -523,26 +655,26 @@ public static class GanyuElementUtils
         decimal total = oldAmount + amount;
 
         // 计算触发次数
-        int num10s = (int)(Math.Floor(total / 10m) - Math.Floor(oldAmount / 10m));
-        int num5s = (int)(Math.Floor(total / 10m + (total % 10m >= 5m ? 1m : 0m))
-                       - Math.Floor(oldAmount / 10m + (oldAmount % 10m >= 5m ? 1m : 0m)));
+        int num6s = (int)(Math.Floor(total / 6m) - Math.Floor(oldAmount / 6m));
+        int num3s = (int)(Math.Floor(total / 6m + (total % 6m >= 3m ? 1m : 0m))
+                       - Math.Floor(oldAmount / 6m + (oldAmount % 6m >= 3m ? 1m : 0m)));
 
-        // 达到10层：给予 1 层海人化羽
-        if (num10s > 0)
+        // 达到6层：给予 1 层海人化羽
+        if (num6s > 0)
         {
-            await PowerCmd.Apply<OceanborneFeatherPower>(CurrentContext, source, num10s * 1m, source, null);
+            await PowerCmd.Apply<OceanborneFeatherPower>(CurrentContext, source, num6s * 1m, source, null);
             GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/xinhai_10.mp3");
         }
 
-        // 达到5层：给予 2 层海月之誓
-        if (num5s > 0)
+        // 达到3层：给予 2 层海月之誓
+        if (num3s > 0)
         {
-            await PowerCmd.Apply<OathSilveryMoonPower>(CurrentContext, source, num5s * 2m, source, null);
+            await PowerCmd.Apply<OathSilveryMoonPower>(CurrentContext, source, num3s * 2m, source, null);
             GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/xinhai_5.mp3");
         }
 
-        // 更新充能层数 (满10清零并保留余数)
-        decimal remainder = total % 10m;
+        // 更新充能层数 (满6清零并保留余数)
+        decimal remainder = total % 6m;
         var existingPower = source.GetPower<WaterChargePower>();
         if (existingPower != null) await PowerCmd.Remove(existingPower);
 
@@ -552,11 +684,6 @@ public static class GanyuElementUtils
     public static async Task ApplyFireCharge(Creature source, decimal amount)
     {
         if (source == null || amount <= 0) return;
-        // 【新增】检查火元素精通Buff：每次获得充能时额外增加对应的层数
-        if (source.GetPower<PyroMasteryPower>() is { } pyroMastery && pyroMastery.Amount > 0)
-        {
-            amount += pyroMastery.Amount;
-        }
         // 【新增】检查并触发元素共生
         if (source.GetPower<ElementalSymbiosisPower>() is { } symbiosis)
         {
@@ -567,26 +694,26 @@ public static class GanyuElementUtils
         decimal total = oldAmount + amount;
 
         // 计算触发次数
-        int num10s = (int)(Math.Floor(total / 10m) - Math.Floor(oldAmount / 10m));
-        int num5s = (int)(Math.Floor(total / 10m + (total % 10m >= 5m ? 1m : 0m))
-                       - Math.Floor(oldAmount / 10m + (oldAmount % 10m >= 5m ? 1m : 0m)));
+        int num6s = (int)(Math.Floor(total / 6m) - Math.Floor(oldAmount / 6m));
+        int num3s = (int)(Math.Floor(total / 6m + (total % 6m >= 3m ? 1m : 0m))
+                       - Math.Floor(oldAmount / 6m + (oldAmount % 6m >= 3m ? 1m : 0m)));
 
-        // 达到10层：给予 2 层旋火轮
-        if (num10s > 0)
+        // 达到6层：给予 2 层旋火轮
+        if (num6s > 0)
         {
-            await PowerCmd.Apply<PyronadoPower>(CurrentContext, source, num10s * 2m, source, null);
+            await PowerCmd.Apply<PyronadoPower>(CurrentContext, source, num6s * 2m, source, null);
             GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/xiangling_10.mp3");
         }
 
-        // 达到5层：给予 2 层锅巴出击
-        if (num5s > 0)
+        // 达到3层：给予 2 层锅巴出击
+        if (num3s > 0)
         {
-            await PowerCmd.Apply<GuobaAttackPower>(CurrentContext, source, num5s * 2m, source, null);
+            await PowerCmd.Apply<GuobaAttackPower>(CurrentContext, source, num3s * 2m, source, null);
             GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/xiangling_5.mp3");
         }
         
-        // 更新充能层数 (满10清零并保留余数)
-        decimal remainder = total % 10m;
+        // 更新充能层数 (满6清零并保留余数)
+        decimal remainder = total % 6m;
         var existingPower = source.GetPower<FireChargePower>();
         if (existingPower != null) await PowerCmd.Remove(existingPower);
 
@@ -596,11 +723,6 @@ public static class GanyuElementUtils
     public static async Task ApplyElectroCharge(Creature source, decimal amount)
     {
         if (source == null || amount <= 0) return;
-        // 【新增】检查雷元素精通Buff：每次获得充能时额外增加对应的层数
-        if (source.GetPower<ElectroMasteryPower>() is { } electroMastery && electroMastery.Amount > 0)
-        {
-            amount += electroMastery.Amount;
-        }
         // 【新增】检查并触发元素共生
         if (source.GetPower<ElementalSymbiosisPower>() is { } symbiosis)
         {
@@ -611,26 +733,26 @@ public static class GanyuElementUtils
         decimal total = oldAmount + amount;
 
         // 计算触发次数
-        int num10s = (int)(Math.Floor(total / 10m) - Math.Floor(oldAmount / 10m));
-        int num5s = (int)(Math.Floor(total / 10m + (total % 10m >= 5m ? 1m : 0m))
-                       - Math.Floor(oldAmount / 10m + (oldAmount % 10m >= 5m ? 1m : 0m)));
+        int num6s = (int)(Math.Floor(total / 6m) - Math.Floor(oldAmount / 6m));
+        int num3s = (int)(Math.Floor(total / 6m + (total % 6m >= 3m ? 1m : 0m))
+                       - Math.Floor(oldAmount / 6m + (oldAmount % 6m >= 3m ? 1m : 0m)));
 
-        // 达到10层：给予 1 层奥义·梦想真说
-        if (num10s > 0)
+        // 达到6层：给予 1 层奥义·梦想真说
+        if (num6s > 0)
         {
-            await PowerCmd.Apply<MusouShinsetsuPower>(CurrentContext, source, num10s * 1m, source, null);
+            await PowerCmd.Apply<MusouShinsetsuPower>(CurrentContext, source, num6s * 1m, source, null);
         }
 
 
-        // 达到5层：给予 2 层神变·恶曜开眼
-        if (num5s > 0)
+        // 达到3层：给予 2 层神变·恶曜开眼
+        if (num3s > 0)
         {
-            await PowerCmd.Apply<BalefulOmenPower>(CurrentContext, source, num5s * 2m, source, null);
+            await PowerCmd.Apply<BalefulOmenPower>(CurrentContext, source, num3s * 2m, source, null);
             GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/leishen_5.mp3");
         }
 
-        // 更新充能层数 (满10清零并保留余数)
-        decimal remainder = total % 10m;
+        // 更新充能层数 (满6清零并保留余数)
+        decimal remainder = total % 6m;
         var existingPower = source.GetPower<ElectroChargePower>();
         if (existingPower != null) await PowerCmd.Remove(existingPower);
 
@@ -640,11 +762,6 @@ public static class GanyuElementUtils
     public static async Task ApplyRockCharge(Creature source, decimal amount)
     {
         if (source == null || amount <= 0) return;
-        // 【新增】检查岩元素精通Buff：每次获得充能时额外增加对应的层数
-        if (source.GetPower<GeoMasteryPower>() is { } geoMastery && geoMastery.Amount > 0)
-        {
-            amount += geoMastery.Amount;
-        }
         // 【新增】检查并触发元素共生
         if (source.GetPower<ElementalSymbiosisPower>() is { } symbiosis)
         {
@@ -654,23 +771,23 @@ public static class GanyuElementUtils
         decimal oldAmount = source.GetPower<RockChargePower>()?.Amount ?? 0m;
         decimal total = oldAmount + amount;
 
-        int num10s = (int)(Math.Floor(total / 10m) - Math.Floor(oldAmount / 10m));
-        int num5s = (int)(Math.Floor(total / 10m + (total % 10m >= 5m ? 1m : 0m))
-                       - Math.Floor(oldAmount / 10m + (oldAmount % 10m >= 5m ? 1m : 0m)));
+        int num6s = (int)(Math.Floor(total / 6m) - Math.Floor(oldAmount / 6m));
+        int num3s = (int)(Math.Floor(total / 6m + (total % 6m >= 3m ? 1m : 0m))
+                       - Math.Floor(oldAmount / 6m + (oldAmount % 6m >= 3m ? 1m : 0m)));
 
-        // 达到10层：给予 1 层天星
-        if (num10s > 0)
-            await PowerCmd.Apply<StarfallPower>(CurrentContext, source, num10s * 1m, source, null);
+        // 达到6层：给予 1 层天星
+        if (num6s > 0)
+            await PowerCmd.Apply<StarfallPower>(CurrentContext, source, num6s * 1m, source, null);
 
-        // 达到5层：给予 2 层玉璋护盾
-        if (num5s > 0)
+        // 达到3层：给予 2 层玉璋护盾
+        if (num3s > 0)
         {
-            await PowerCmd.Apply<JadeShieldPower>(CurrentContext, source, num5s * 2m, source, null);
+            await PowerCmd.Apply<JadeShieldPower>(CurrentContext, source, num3s * 2m, source, null);
             GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/zhongli_5.mp3");
         }
 
 
-        decimal remainder = total % 10m;
+        decimal remainder = total % 6m;
         var existingPower = source.GetPower<RockChargePower>();
         if (existingPower != null) await PowerCmd.Remove(existingPower);
 
@@ -680,11 +797,6 @@ public static class GanyuElementUtils
     public static async Task ApplyWindCharge(Creature source, decimal amount)
     {
         if (source == null || amount <= 0) return;
-        // 【新增】检查风元素精通Buff：每次获得充能时额外增加对应的层数
-        if (source.GetPower<AnemoMasteryPower>() is { } anemoMastery && anemoMastery.Amount > 0)
-        {
-            amount += anemoMastery.Amount;
-        }
         // 【新增】检查并触发元素共生
         if (source.GetPower<ElementalSymbiosisPower>() is { } symbiosis)
         {
@@ -694,26 +806,26 @@ public static class GanyuElementUtils
         decimal oldAmount = source.GetPower<WindChargePower>()?.Amount ?? 0m;
         decimal total = oldAmount + amount;
 
-        int num10s = (int)(Math.Floor(total / 10m) - Math.Floor(oldAmount / 10m));
-        int num5s = (int)(Math.Floor(total / 10m + (total % 10m >= 5m ? 1m : 0m))
-                       - Math.Floor(oldAmount / 10m + (oldAmount % 10m >= 5m ? 1m : 0m)));
+        int num6s = (int)(Math.Floor(total / 6m) - Math.Floor(oldAmount / 6m));
+        int num3s = (int)(Math.Floor(total / 6m + (total % 6m >= 3m ? 1m : 0m))
+                       - Math.Floor(oldAmount / 6m + (oldAmount % 6m >= 3m ? 1m : 0m)));
 
-        // 达到10层：给予 3 层禁·风灵作成·柒伍同构贰型
-        if (num10s > 0)
+        // 达到6层：给予 3 层禁·风灵作成·柒伍同构贰型
+        if (num6s > 0)
         {
-            await PowerCmd.Apply<ForbiddenWindSpirit75Power>(CurrentContext, source, num10s * 3m, source, null);
+            await PowerCmd.Apply<ForbiddenWindSpirit75Power>(CurrentContext, source, num6s * 3m, source, null);
             GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/shatang_10.mp3");
         }
         
 
-        // 达到5层：给予 1 层风灵作成·陆叁零捌
-        if (num5s > 0)
+        // 达到3层：给予 1 层风灵作成·陆叁零捌
+        if (num3s > 0)
         {
-            await PowerCmd.Apply<WindSpirit6308Power>(CurrentContext, source, num5s * 1m, source, null);
+            await PowerCmd.Apply<WindSpirit6308Power>(CurrentContext, source, num3s * 1m, source, null);
             GanyuAudioHelper.PlayOneShot("res://Ganyu/audios/shatang_5.mp3");
         }
 
-        decimal remainder = total % 10m;
+        decimal remainder = total % 6m;
         var existingPower = source.GetPower<WindChargePower>();
         if (existingPower != null) await PowerCmd.Remove(existingPower);
 

@@ -39,7 +39,7 @@ public class CocogoatPower : CustomPowerModel
 		}
 		return amount + (decimal)base.Amount;
 	}
-    public override async Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side, ICombatState ICombatState)
+    public override async Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side, IReadOnlyList<Creature> participants,ICombatState ICombatState)
     {
         if (side == base.Owner.Side)
         {

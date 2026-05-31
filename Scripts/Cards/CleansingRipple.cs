@@ -47,8 +47,6 @@ public sealed class CleansingRipple : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级效果：伤害增加 3 点 (8 -> 11)，虚弱增加 1 层 (1 -> 2)
         base.DynamicVars.Block.UpgradeValueBy(3m);
-        base.DynamicVars.Power<WetPower>().UpgradeValueBy(1m);
     }
 }
