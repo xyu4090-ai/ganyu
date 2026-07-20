@@ -15,6 +15,12 @@ public static class TouchOfOrobasPatch
         // 假设你的初始遗物类名是 GanyuStarterRelic，升级版是 GanyuBossRelic
         if (starterRelic.Id == ModelDb.Relic<HeavenlyFall>().Id)
         {
+            // 从实际遗物实例同步当前命座等级到静态变量，
+            // 确保 HeavenlyFallUP.EnsureInitialized 读取到正确值
+            if (starterRelic is HeavenlyFall hf)
+            {
+                HeavenlyFall.TransferConstellation = hf.BaseConstellation;
+            }
             // 将结果替换为你想要的 Boss 遗物模型
             __result = ModelDb.Relic<HeavenlyFallUP>();
         }

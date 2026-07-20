@@ -31,6 +31,9 @@ public sealed class CondensedFrost : GanyuCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        // 获得格挡
+        await CreatureCmd.GainBlock(base.Owner.Creature, base.DynamicVars.Block, cardPlay);
+
         // 调用元素工具类施加冰元素并触发反应
         await ActionWithContext(choiceContext, async () =>
         {

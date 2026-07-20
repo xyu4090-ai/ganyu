@@ -66,8 +66,7 @@ public sealed class Resonance : GanyuCardModel
 
     protected override void OnUpgrade()
     {
-        // 升级：格挡 5 -> 8，耗能 1 -> 0
-        base.EnergyCost.UpgradeBy(-1);
+        // 升级：格挡 5 -> 8
         base.DynamicVars.Block.UpgradeValueBy(3);
     }
 }

@@ -1,0 +1,17 @@
+{
+  "GANYU-GANYU_CHARACTER.aromaPrinciple": "[sine][blue]...Waiting...[/blue][/sine]",
+  "GANYU-GANYU_CHARACTER.banter.alive.endTurnPing": "Hurry up and play your cards, slacker",
+  "GANYU-GANYU_CHARACTER.banter.dead.endTurnPing": "How did I even die? You're so bad at this",
+  "GANYU-GANYU_CHARACTER.cardsModifierDescription": "Ganyu's cards will now appear in rewards and shops.",
+  "GANYU-GANYU_CHARACTER.cardsModifierTitle": "Ganyu Cards",
+  "GANYU-GANYU_CHARACTER.description": "A being who has worked in Liyue for over a thousand years.\nTime, for [gold]Ganyu[/gold], is merely another form of eternity.",
+  "GANYU-GANYU_CHARACTER.eventDeathPrevention": "I still have to keep waiting...",
+  "GANYU-GANYU_CHARACTER.goldMonologue": "[sine]These coins... perhaps they'll come in handy...[/sine]",
+  "GANYU-GANYU_CHARACTER.possessiveAdjective": "her",
+  "GANYU-GANYU_CHARACTER.pronounObject": "her",
+  "GANYU-GANYU_CHARACTER.pronounPossessive": "her",
+  "GANYU-GANYU_CHARACTER.pronounSubject": "she",
+  "GANYU-GANYU_CHARACTER.title": "Ganyu",
+  "GANYU-GANYU_CHARACTER.titleObject": "Ganyu",
+  "GANYU-GANYU_CHARACTER.unlockText": "Play a run with [pink]{Prerequisite}[/pink] to unlock this character."
+}

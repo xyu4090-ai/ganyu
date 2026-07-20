@@ -57,5 +57,6 @@ public sealed class Thunderclap : GanyuCardModel
 
     protected override void OnUpgrade()
     {
+        base.DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

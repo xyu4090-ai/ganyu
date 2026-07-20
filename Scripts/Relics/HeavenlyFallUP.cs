@@ -60,7 +60,7 @@ public class HeavenlyFallUP : CustomRelicModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DynamicVar("Constellation", CurrentConstellation),
+        new ConstellationDynamicVar(() => CurrentConstellation),
         new DynamicVar("Bonus", ConstellationBonus)
     ];
 
@@ -75,12 +75,24 @@ public class HeavenlyFallUP : CustomRelicModel
     ];
 
     /// <summary>
+    /// 同步 DynamicVars 中的 Constellation 值，确保遗物描述文本正确显示。
+    /// </summary>
+    private void SyncConstellationDynamicVar()
+    {
+        if (DynamicVars.TryGetValue("Constellation", out var var))
+        {
+            var.BaseValue = CurrentConstellation;
+        }
+    }
+
+    /// <summary>
     /// 永久提升命之座等级（通过事件）
     /// </summary>
     public void IncreaseBaseConstellation(int amount = 1)
     {
         EnsureInitialized();
         BaseConstellation = Math.Min(BaseConstellation + amount, 6);
+        SyncConstellationDynamicVar();
         InvokeDisplayAmountChanged();
     }
 
@@ -91,6 +103,7 @@ public class HeavenlyFallUP : CustomRelicModel
     {
         EnsureInitialized();
         _temporaryBoost = Math.Min(_temporaryBoost + amount, 6 - BaseConstellation);
+        SyncConstellationDynamicVar();
         InvokeDisplayAmountChanged();
     }
 

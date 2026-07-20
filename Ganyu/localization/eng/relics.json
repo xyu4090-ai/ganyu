@@ -1,0 +1,18 @@
+{
+    "GANYU-HEAVENLY_FALL.description": "At the start of combat, apply corresponding buffs based on [gold]Constellation[/gold] level in order, and add a [gold]Frostflake Arrow[/gold] to your hand.\nCurrent Constellation: [blue]{Constellation}[/blue].",
+    "GANYU-HEAVENLY_FALL.flavor": "C1: Drinkwater, C2: Qilin, C3: Cloudwalk, C4: Western Hunt, C5: Grasscutter, C6: Beetle.",
+    "GANYU-HEAVENLY_FALL.title": "Constellation",
+    "GANYU-HEAVENLY_FALL_U_P.description": "[gold]Constellation[/gold] permanently +[blue]{Bonus}[/blue].\nAt the start of combat, apply corresponding buffs based on [gold]Constellation[/gold] level in order, and add a [gold]Frostflake Arrow[/gold] to your hand.\nCurrent Constellation: [blue]{Constellation}[/blue].",
+    "GANYU-HEAVENLY_FALL_U_P.flavor": "C1: Drinkwater, C2: Qilin, C3: Cloudwalk, C4: Western Hunt, C5: Grasscutter, C6: Beetle.",
+    "GANYU-HEAVENLY_FALL_U_P.title": "Constellation UP",
+    "GANYU-CRYA_THEORY.description": "Only Cryo and Anemo can react with other elements. Other elements coexist without reacting. Anemo Swirl priority: Cryo, Hydro, Pyro, Electro, Geo.\n[gold]Any element + Anemo[/gold] triggers Swirl.\n[gold]Cryo + Pyro[/gold] triggers Melt.\n[gold]Cryo + Hydro[/gold] triggers Frozen.\n[gold]Cryo + Geo[/gold] triggers Crystallize.\n[gold]Cryo + Electro[/gold] triggers Superconduct.\nEach time an element is applied to an enemy, gain 1 stack of the corresponding elemental Charge.",
+    "GANYU-CRYA_THEORY.flavor": "Elemental reaction priority follows the order listed above.",
+    "GANYU-CRYA_THEORY.title": "Cryo Theory",
+    "GANYU-ELEMENTAL_HOURGLASS.description": "When using a card to apply an element without triggering an elemental reaction, gain the corresponding elemental Charge. Upon reaching certain Charge thresholds, gain powerful buffs.",
+    "GANYU-ELEMENTAL_HOURGLASS.flavor": "The sand in the hourglass never ceases to flow, just as the power of elements is ever-renewing.",
+    "GANYU-ELEMENTAL_HOURGLASS.title": "Elemental Hourglass",
+    "GANYU-READY_TO_GO.description": "Upon obtaining this relic, choose a card from your deck to gain [gold]Charge[/gold] and [gold]Retain[/gold] enchantment.",
+    "GANYU-READY_TO_GO.flavor": "Ready to strike, never miss.",
+    "GANYU-READY_TO_GO.title": "Ready to Go",
+    "GANYU-READY_TO_GO.selectionScreenPrompt": "Choose a card to gain Charge and Retain enchantment"
+}

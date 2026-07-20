@@ -19,6 +19,26 @@ using System.Threading.Tasks;
 
 namespace Ganyu.Scripts.Relics;
 
+/// <summary>
+/// 动态变量子类，始终返回最新的 CurrentConstellation 值，
+/// 确保遗物描述文本中的 {Constellation} 始终显示当前命座等级。
+/// </summary>
+internal class ConstellationDynamicVar : DynamicVar
+{
+    private readonly Func<int> _getValue;
+
+    public ConstellationDynamicVar(Func<int> getValue) : base("Constellation", getValue())
+    {
+        _getValue = getValue;
+    }
+
+    protected override decimal GetBaseValueForIConvertible() => _getValue();
+
+    // SmartFormat 通过 ToString() 获取显示文本，基类返回缓存的 _baseValue，
+    // 必须用 new 隐藏以返回实时值。
+    public new string ToString() => _getValue().ToString();
+}
+
 [Pool(typeof(GanyuRelicPool))]
 public class HeavenlyFall : CustomRelicModel
 {
@@ -61,7 +81,7 @@ public class HeavenlyFall : CustomRelicModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DynamicVar("Constellation", CurrentConstellation)
+        new ConstellationDynamicVar(() => CurrentConstellation)
     ];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
@@ -75,11 +95,23 @@ public class HeavenlyFall : CustomRelicModel
     ];
 
     /// <summary>
+    /// 同步 DynamicVars 中的 Constellation 值，确保遗物描述文本正确显示。
+    /// </summary>
+    private void SyncConstellationDynamicVar()
+    {
+        if (DynamicVars.TryGetValue("Constellation", out var var))
+        {
+            var.BaseValue = CurrentConstellation;
+        }
+    }
+
+    /// <summary>
     /// 永久提升命之座等级（通过事件）
     /// </summary>
     public void IncreaseBaseConstellation(int amount = 1)
     {
         BaseConstellation = Math.Min(BaseConstellation + amount, 6);
+        SyncConstellationDynamicVar();
         InvokeDisplayAmountChanged();
     }
 
@@ -89,6 +121,7 @@ public class HeavenlyFall : CustomRelicModel
     public void IncreaseTemporaryConstellation(int amount = 1)
     {
         _temporaryBoost = Math.Min(_temporaryBoost + amount, 6 - BaseConstellation);
+        SyncConstellationDynamicVar();
         InvokeDisplayAmountChanged();
     }
 
@@ -149,6 +182,12 @@ public class HeavenlyFall : CustomRelicModel
             await ApplyConstellationBuffs(choiceContext, base.Owner.Creature, _appliedConstellation, current);
             _appliedConstellation = current;
         }
+    }
+
+    public override async Task AfterObtained()
+    {
+        // 新一轮获取遗物时，同步静态变量，防止上一轮的残留值影响 HeavenlyFallUP
+        TransferConstellation = BaseConstellation;
     }
 
     public override async Task AfterCombatEnd(CombatRoom _)
